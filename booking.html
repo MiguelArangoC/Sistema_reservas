@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reserva - <span class="b-name">Lumina</span></title>
+  
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+
+  <!-- Minimal Navbar for Booking Flow -->
+  <nav class="navbar" style="position: relative; margin-bottom: var(--space-8);">
+    <div class="navbar__inner">
+      <a href="index.html" class="navbar__logo">
+        <div class="navbar__logo-icon">✨</div>
+        <span class="b-name">Lumina</span>
+      </a>
+      <div class="navbar__actions">
+        <button id="theme-toggle" class="navbar__toggle-theme" aria-label="Cambiar tema">🌙</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="section-header reveal" style="margin-bottom: var(--space-8);">
+      <h2>Agenda tu Cita</h2>
+      <p>Sigue estos sencillos pasos para completar tu reserva.</p>
+    </div>
+
+    <!-- Progress Tracker -->
+    <div class="progress-steps" style="max-width: 600px; margin: 0 auto var(--space-12);">
+      <div class="step-item">
+        <div class="step-circle active" id="step-circle-1">1<span class="step-label">Servicio</span></div>
+        <div class="step-line" id="step-line-1"></div>
+      </div>
+      <div class="step-item">
+        <div class="step-circle" id="step-circle-2">2<span class="step-label">Profesional</span></div>
+        <div class="step-line" id="step-line-2"></div>
+      </div>
+      <div class="step-item">
+        <div class="step-circle" id="step-circle-3">3<span class="step-label">Fecha</span></div>
+        <div class="step-line" id="step-line-3"></div>
+      </div>
+      <div class="step-item" style="flex: 0;">
+        <div class="step-circle" id="step-circle-4">4<span class="step-label">Tus Datos</span></div>
+      </div>
+    </div>
+
+    <div class="booking-layout">
+      <!-- Main Content -->
+      <div class="booking-main">
+        
+        <!-- Step 1: Services -->
+        <div id="step-1" class="step-content active">
+          <h3 style="margin-bottom: var(--space-6);">Selecciona el Servicio</h3>
+          <div class="services-grid" id="booking-services">
+            <!-- Populated by booking.js -->
+          </div>
+        </div>
+
+        <!-- Step 2: Staff -->
+        <div id="step-2" class="step-content">
+          <h3 style="margin-bottom: var(--space-6);">¿Con quién deseas atenderte?</h3>
+          <div class="staff-grid" id="booking-staff">
+            <!-- Populated by booking.js -->
+          </div>
+        </div>
+
+        <!-- Step 3: Date and Time -->
+        <div id="step-3" class="step-content">
+          <h3 style="margin-bottom: var(--space-6);">Selecciona Fecha y Hora</h3>
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-8);">
+            <!-- Calendar Component -->
+            <div id="calendar-container">
+              <!-- Rendered by calendar.js -->
+            </div>
+            
+            <!-- Time Slots Component -->
+            <div>
+              <h4 style="margin-bottom: var(--space-4); font-size: var(--text-base);">Horarios Disponibles</h4>
+              <div id="time-slots-container" class="time-slots-grid">
+                <p class="text-muted" style="grid-column: 1/-1;">Selecciona un día en el calendario.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Client Details -->
+        <div id="step-4" class="step-content">
+          <h3 style="margin-bottom: var(--space-6);">Tus Datos Personales</h3>
+          <form id="booking-form" class="form-group" style="gap: var(--space-4);">
+            <div class="form-group">
+              <label class="form-label" for="client-name">Nombre Completo <span class="required">*</span></label>
+              <input type="text" id="client-name" class="form-input" placeholder="Ej. Ana Martínez" required>
+            </div>
+            
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+              <div class="form-group">
+                <label class="form-label" for="client-phone">Teléfono / WhatsApp <span class="required">*</span></label>
+                <input type="tel" id="client-phone" class="form-input" placeholder="+57 300 000 0000" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="client-email">Correo Electrónico <span class="required">*</span></label>
+                <input type="email" id="client-email" class="form-input" placeholder="correo@ejemplo.com" required>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="client-notes">Notas Adicionales (Opcional)</label>
+              <textarea id="client-notes" class="form-textarea" placeholder="¿Alguna condición médica o petición especial?"></textarea>
+            </div>
+          </form>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="step-actions">
+          <button type="button" class="btn btn-secondary" id="btn-prev" style="visibility: hidden;">Atrás</button>
+          <button type="button" class="btn btn-primary" id="btn-next" disabled>Siguiente</button>
+        </div>
+
+      </div>
+
+      <!-- Summary Sidebar -->
+      <aside class="booking-summary">
+        <div class="booking-summary__toggle" id="summary-toggle">
+          <span style="font-weight: 600;">Ver Resumen</span>
+          <span class="summary-total__value" style="font-size: var(--text-lg);" id="mobile-total">$0</span>
+        </div>
+        
+        <div class="booking-summary__content">
+          <h3 class="booking-summary__title">Resumen de tu Cita</h3>
+          
+          <div class="summary-row">
+            <div class="summary-row__icon">✨</div>
+            <div>
+              <div class="summary-row__label">Servicio</div>
+              <div class="summary-row__value" id="sum-service">No seleccionado</div>
+            </div>
+          </div>
+          
+          <div class="summary-row">
+            <div class="summary-row__icon">👤</div>
+            <div>
+              <div class="summary-row__label">Profesional</div>
+              <div class="summary-row__value" id="sum-staff">Cualquiera</div>
+            </div>
+          </div>
+          
+          <div class="summary-row">
+            <div class="summary-row__icon">📅</div>
+            <div>
+              <div class="summary-row__label">Fecha y Hora</div>
+              <div class="summary-row__value" id="sum-datetime">No seleccionado</div>
+            </div>
+          </div>
+
+          <div class="summary-total">
+            <div class="summary-total__label">Total estimado</div>
+            <div class="summary-total__value" id="sum-total">$0</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/booking.js"></script>
+</body>
+</html>

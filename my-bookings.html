@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Reservas - <span class="b-name">Lumina</span></title>
+  
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body style="min-height: 100vh; display: flex; flex-direction: column;">
+
+  <!-- Navbar -->
+  <nav class="navbar" style="position: relative;">
+    <div class="navbar__inner">
+      <a href="index.html" class="navbar__logo">
+        <div class="navbar__logo-icon">✨</div>
+        <span class="b-name">Lumina</span>
+      </a>
+      <div class="navbar__actions">
+        <button id="theme-toggle" class="navbar__toggle-theme" aria-label="Cambiar tema">🌙</button>
+        <a href="index.html" class="btn btn-ghost">Inicio</a>
+        <a href="admin.html" class="btn btn-ghost">Admin</a>
+        <a href="booking.html" class="btn btn-primary">Reservar Ahora</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container" style="flex: 1; padding-block: var(--space-12);">
+    
+    <div class="section-header reveal" style="margin-bottom: var(--space-8);">
+      <h2>Mis Reservas</h2>
+      <p>Ingresa tu correo o número de teléfono para ver el estado de tus citas.</p>
+    </div>
+
+    <!-- Search Form -->
+    <div class="card card-glass animate-scale-in" style="max-width: 600px; margin: 0 auto var(--space-12); padding: var(--space-6);">
+      <form id="search-form" style="display: flex; gap: var(--space-4);">
+        <input type="text" id="search-query" class="form-input" placeholder="Correo electrónico o Teléfono" required style="flex: 1;">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+      </form>
+    </div>
+
+    <!-- Results Area -->
+    <div id="results-area" style="max-width: 800px; margin: 0 auto; display: none;">
+      <h3 style="margin-bottom: var(--space-6);">Resultados Encontrados</h3>
+      <div id="bookings-list" style="display: flex; flex-direction: column; gap: var(--space-4);">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+  </main>
+
+  <footer style="text-align: center; padding: var(--space-8); border-top: 1px solid var(--border-subtle); color: var(--text-muted); margin-top: auto;">
+    <p>&copy; <script>document.write(new Date().getFullYear())</script> <span class="b-name">Lumina</span>. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('search-form');
+      const queryInput = document.getElementById('search-query');
+      const resultsArea = document.getElementById('results-area');
+      const list = document.getElementById('bookings-list');
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = queryInput.value.trim().toLowerCase();
+        if (!query) return;
+
+        const allBookings = window.MockDB.getBookings();
+        
+        // Filter by email or phone
+        const found = allBookings.filter(b => {
+          return b.client.email.toLowerCase() === query || 
+                 b.client.phone.replace(/\s+/g,'').includes(query.replace(/\s+/g,''));
+        });
+        
+        renderResults(found);
+        resultsArea.style.display = 'block';
+      });
+
+      function renderResults(bookings) {
+        list.innerHTML = '';
+        
+        if (bookings.length === 0) {
+          list.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state__icon">🔍</div>
+              <h3 class="empty-state__title">No encontramos reservas</h3>
+              <p class="empty-state__desc">Verifica que el correo o teléfono sea correcto e intenta de nuevo.</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Sort by date descending
+        bookings.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+        bookings.forEach(b => {
+          const srv = BUSINESS_CONFIG.services.find(s => s.id === b.serviceId);
+          
+          const [year, month, day] = b.date.split('-');
+          const bDate = new Date(year, month - 1, day);
+          const dStr = bDate.toLocaleDateString(BUSINESS_CONFIG.locale, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+          
+          let badgeClass = 'badge-primary';
+          let statusText = 'Confirmada';
+          if (b.status === 'cancelled') { badgeClass = 'badge-error'; statusText = 'Cancelada'; }
+          if (b.status === 'pending') { badgeClass = 'badge-warning'; statusText = 'Pendiente'; }
+
+          // Check if past
+          const isPast = new Date(b.date + 'T' + b.time) < new Date();
+          if (isPast && b.status === 'confirmed') {
+            badgeClass = 'badge-muted';
+            statusText = 'Completada';
+          }
+
+          list.innerHTML += `
+            <div class="card card-glass" style="display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-5);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <div class="text-xs text-muted" style="margin-bottom: 4px;">Código: ${b.id}</div>
+                  <h4 style="font-size: var(--text-lg); margin-bottom: 2px;">${srv ? srv.name : 'Servicio'}</h4>
+                  <div class="text-secondary" style="font-size: var(--text-sm);">📅 ${dStr} a las ${b.time}</div>
+                </div>
+                <div class="badge ${badgeClass}">${statusText}</div>
+              </div>
+              
+              ${!isPast && b.status !== 'cancelled' ? `
+                <div style="border-top: 1px solid var(--border-subtle); padding-top: var(--space-4); display: flex; gap: var(--space-3); justify-content: flex-end;">
+                  <button class="btn btn-sm btn-ghost" onclick="cancelBooking('${b.id}')">Cancelar Cita</button>
+                  <a href="booking.html" class="btn btn-sm btn-secondary">Reprogramar</a>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        });
+      }
+      
+      // Expose cancel function
+      window.cancelBooking = function(id) {
+        if(confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {
+          // Update DB mock
+          const db = JSON.parse(localStorage.getItem('reservas_mock_db'));
+          const idx = db.bookings.findIndex(b => b.id === id);
+          if (idx > -1) {
+            db.bookings[idx].status = 'cancelled';
+            localStorage.setItem('reservas_mock_db', JSON.stringify(db));
+            
+            // Re-trigger search to update UI
+            document.getElementById('search-form').dispatchEvent(new Event('submit'));
+            window.showToast("Reserva cancelada con éxito", "success");
+          }
+        }
+      };
+
+    });
+  </script>
+</body>
+</html>

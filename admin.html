@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración - <span class="b-name">Lumina</span></title>
+  
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <a href="index.html" class="navbar__logo" style="margin-bottom: var(--space-8);">
+        <div class="navbar__logo-icon">✨</div>
+        <span class="b-name">Lumina</span>
+      </a>
+      
+      <nav style="display: flex; flex-direction: column; gap: var(--space-2);">
+        <a href="#" class="btn btn-ghost" style="justify-content: flex-start; background: var(--bg-card); color: var(--primary);">
+          <span style="font-size: 20px;">📅</span> Agenda Diaria
+        </a>
+        <a href="#" class="btn btn-ghost" style="justify-content: flex-start;">
+          <span style="font-size: 20px;">👥</span> Clientes
+        </a>
+        <a href="#" class="btn btn-ghost" style="justify-content: flex-start;">
+          <span style="font-size: 20px;">⚙️</span> Configuración
+        </a>
+      </nav>
+      
+      <div style="margin-top: auto; padding-top: var(--space-8);">
+        <button id="theme-toggle" class="btn btn-ghost w-full">🌙 Cambiar Tema</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-content">
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8);">
+        <div>
+          <h1 style="font-size: var(--text-2xl); margin-bottom: var(--space-1);">Panel de Control</h1>
+          <p class="text-muted">Resumen y agenda del día de hoy.</p>
+        </div>
+        <div>
+          <input type="date" id="admin-date" class="form-input" style="width: auto;">
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="card stat-card">
+          <div class="stat-item__label">Reservas Hoy</div>
+          <div class="stat-item__value" id="stat-today">0</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-item__label">Reservas Próximas</div>
+          <div class="stat-item__value" id="stat-upcoming">0</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-item__label">Canceladas</div>
+          <div class="stat-item__value" id="stat-cancelled" style="color: var(--error);">0</div>
+        </div>
+      </div>
+
+      <!-- Agenda Table -->
+      <div class="table-wrapper">
+        <table id="agenda-table">
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Cliente</th>
+              <th>Servicio</th>
+              <th>Profesional</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Populated by admin.js -->
+          </tbody>
+        </table>
+        
+        <div id="agenda-empty" class="empty-state" style="display: none;">
+          <div class="empty-state__icon">🌴</div>
+          <h3 class="empty-state__title">No hay reservas</h3>
+          <p class="empty-state__desc">No se encontraron citas agendadas para esta fecha.</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal for Booking Details -->
+  <div class="modal-overlay" id="detail-modal" style="display: none;">
+    <div class="modal">
+      <button class="modal__close" onclick="closeModal()">×</button>
+      <h2 class="modal__title">Detalles de la Reserva</h2>
+      <div id="modal-content" style="display: flex; flex-direction: column; gap: var(--space-4);">
+        <!-- Populated by admin.js -->
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
