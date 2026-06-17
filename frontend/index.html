@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumina Studio — Bienestar Personalizado</title>
+  <meta name="description" content="Lumina Studio es tu espacio de lujo para el cuidado personal. Tratamientos faciales, masajes, manicura, peluquería y maquillaje de la mano de expertos certificados.">
+  <meta property="og:title" content="Lumina Studio">
+  <meta property="og:description" content="La excelencia del bienestar personalizada para ti.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ── Navigation ────────────────────────────────────────────────────────── -->
+<nav class="nav" id="nav" role="navigation" aria-label="Navegación principal">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">Lumina Studio</a>
+
+    <div class="nav__links" id="nav-links">
+      <a href="#inicio"         class="active">Home</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#profesionales">Profesionales</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+
+    <a href="booking.html" class="btn btn--primary" id="nav-book-btn">
+      Book Appointment
+    </a>
+
+    <button class="nav__hamburger" id="hamburger" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ── Hero ──────────────────────────────────────────────────────────────── -->
+<section class="hero" id="inicio" aria-labelledby="hero-title">
+  <div class="hero__bg" aria-hidden="true"></div>
+  <div class="container">
+    <div class="hero__content">
+      <p class="hero__eyebrow">Belleza &amp; Bienestar</p>
+      <h1 class="hero__title" id="hero-title">
+        La excelencia del<br>bienestar <em>personalizada</em><br>para ti.
+      </h1>
+      <p class="hero__desc">
+        En Lumina Studio, combinamos técnicas de vanguardia con un
+        cuidado de atención al detalle que te hará sentir y verte diferente.
+        La mejor versión de ti empieza con la cita perfecta.
+      </p>
+      <div class="hero__cta">
+        <a href="booking.html" class="btn btn--primary btn--lg" id="hero-book-btn">Agenda Cita</a>
+        <a href="#servicios"   class="btn btn--outline btn--lg">Nuestros Servicios</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Featured Services (manual showcase) ───────────────────────────────── -->
+<section class="section" id="destacados" aria-labelledby="destacados-title">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">Lo más solicitado</span>
+      <h2 class="section-title" id="destacados-title">Servicios Destacados</h2>
+      <p class="section-subtitle">Nuestros tratamientos más populares, realizados por expertos con pasión por el detalle.</p>
+    </div>
+
+    <div class="services-featured fade-in">
+      <!-- Big featured card -->
+      <div class="service-card--featured">
+        <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=900&q=85" alt="Tratamiento Facial Premium" loading="lazy">
+        <div class="service-card__overlay">
+          <p style="font-size:0.7rem;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:0.2rem">Tratamientos Faciales</p>
+          <h3>Tratamiento Facial Premium</h3>
+          <p>Radiofrecuencia + vitamina C + colágeno marino para una piel radiante.</p>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-family:var(--font-heading);font-size:1.5rem;font-weight:700">$95</span>
+            <a href="booking.html" class="btn btn--primary">Reserva</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column cards -->
+      <div class="service-card--sm">
+        <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80" alt="Masaje de Piedras Volcánicas" loading="lazy">
+        <div style="position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(45,27,45,0.75));z-index:0;border-radius:var(--radius-md)"></div>
+        <div class="card-label" style="position:absolute;bottom:var(--space-md);left:var(--space-md);right:var(--space-md);z-index:1">
+          <h4 style="color:#fff;font-size:1rem">Masaje de Piedras Volcánicas</h4>
+          <span style="color:rgba(255,255,255,0.85);font-size:0.85rem">$85,00</span>
+        </div>
+        <a href="booking.html" style="position:absolute;top:var(--space-sm);right:var(--space-sm);z-index:1;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.2);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.9rem">+</a>
+      </div>
+
+      <div class="service-card--sm">
+        <img src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=600&q=80" alt="Maquillaje de Novia" loading="lazy">
+        <div style="position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(45,27,45,0.75));z-index:0;border-radius:var(--radius-md)"></div>
+        <div class="card-label" style="position:absolute;bottom:var(--space-md);left:var(--space-md);right:var(--space-md);z-index:1">
+          <h4 style="color:#fff;font-size:1rem">Maquillaje de Novia</h4>
+          <span style="color:rgba(255,255,255,0.85);font-size:0.85rem">$120,00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Professional spotlight ─────────────────────────────────────────────── -->
+<section class="section section--alt" id="spotlight">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3xl);align-items:center">
+      <div class="fade-in">
+        <img
+          src="https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=700&q=85"
+          alt="Elena Martínez — Especialista en Skincare"
+          loading="lazy"
+          style="width:100%;height:460px;object-fit:cover;object-position:top;border-radius:var(--radius-lg)"
+        >
+      </div>
+      <div class="fade-in fade-in--delay-1">
+        <span class="section-label">Especialista destacada</span>
+        <h2 style="margin-bottom:var(--space-md)">Elena Martínez</h2>
+        <p style="font-size:0.8rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--clr-primary);margin-bottom:var(--space-lg)">Especialista en Skincare</h2>
+        <p style="margin-bottom:var(--space-xl)">
+          Experta en tratamientos faciales con más de 8 años de experiencia.
+          Especializada en tecnología avanzada y manejo de pieles sensibles.
+          Su objetivo es que cada cliente salga sintiéndose la mejor versión de sí mismo.
+        </p>
+
+        <!-- Hours mini-card -->
+        <div class="hours-card">
+          <h4 style="font-size:0.9rem;font-weight:600;margin-bottom:var(--space-md)">Tu espacio de retiro semanal</h4>
+          <div class="hours-row">
+            <span class="hours-row__day">Lunes - Viernes</span>
+            <span class="hours-row__time">09:00 - 20:00 hs</span>
+          </div>
+          <div class="hours-row">
+            <span class="hours-row__day">Sábados</span>
+            <span class="hours-row__time">10:00 - 18:00 hs</span>
+          </div>
+          <div class="hours-row">
+            <span class="hours-row__day">Domingos</span>
+            <span class="hours-row__badge">Solo bajo pedido</span>
+          </div>
+        </div>
+
+        <div style="margin-top:var(--space-xl)">
+          <a href="booking.html" class="btn btn--primary btn--lg" id="spotlight-book-btn">Reserva con Elena</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── All Services ───────────────────────────────────────────────────────── -->
+<section class="section" id="servicios" aria-labelledby="servicios-title">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">Catálogo completo</span>
+      <h2 class="section-title" id="servicios-title">Nuestros Servicios</h2>
+      <p class="section-subtitle">Cada tratamiento está diseñado para elevar tu bienestar a otro nivel. Realizados con los mejores productos y técnicas de vanguardia.</p>
+    </div>
+    <div class="services-grid" id="services-grid" role="list" aria-label="Catálogo de servicios">
+      <!-- Populated by main.js -->
+      <div class="skeleton" style="height:340px;border-radius:20px"></div>
+      <div class="skeleton" style="height:340px;border-radius:20px"></div>
+      <div class="skeleton" style="height:340px;border-radius:20px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Professionals ──────────────────────────────────────────────────────── -->
+<section class="section section--alt" id="profesionales" aria-labelledby="profesionales-title">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">Nuestro equipo</span>
+      <h2 class="section-title" id="profesionales-title">Nuestros Expertos</h2>
+      <p class="section-subtitle">Conoce a nuestro equipo de estilistas y terapeutas. Cada uno es un artista comprometido con tu bienestar.</p>
+    </div>
+    <div class="professionals-grid" id="professionals-grid" role="list" aria-label="Equipo de profesionales">
+      <!-- Populated by main.js -->
+      <div class="skeleton" style="height:400px;border-radius:20px"></div>
+      <div class="skeleton" style="height:400px;border-radius:20px"></div>
+      <div class="skeleton" style="height:400px;border-radius:20px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Contact ────────────────────────────────────────────────────────────── -->
+<section class="contact-section" id="contacto" aria-labelledby="contacto-title">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="fade-in">
+        <span class="section-label" style="background:rgba(196,122,148,0.15);color:var(--clr-primary-light)">Estamos aquí para ti</span>
+        <h2 style="color:var(--clr-white);margin-bottom:var(--space-sm)" id="contacto-title">Hablemos de tu<br>próximo momento Lumina</h2>
+        <p class="contact-info__subtitle">
+          Escríbenos, llámanos o visítanos en nuestra sala. Estamos listos para agendar tu cita ideal con la máxima personalización.
+        </p>
+        <div class="contact-items">
+          <div class="contact-item">
+            <div class="contact-item__icon">📞</div>
+            <div class="contact-item__text">
+              <strong>Teléfono</strong>
+              <span>+34 912 345 678</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item__icon">📍</div>
+            <div class="contact-item__text">
+              <strong>Dirección</strong>
+              <span>Calle de la Serenidad 45, Madrid</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item__icon">✉️</div>
+            <div class="contact-item__text">
+              <strong>Email</strong>
+              <span>hola@luminastudio.es</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:var(--space-2xl)">
+          <a href="booking.html" class="btn btn--primary btn--lg" id="contact-book-btn">Agenda tu Cita</a>
+        </div>
+      </div>
+
+      <div class="fade-in fade-in--delay-1">
+        <div class="map-placeholder">
+          <iframe
+            title="Ubicación de Lumina Studio en Madrid"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=-3.7200,40.4100,-3.6800,40.4300&layer=mapnik"
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__brand-logo">Lumina Studio</div>
+        <p class="footer__brand-desc">
+          Especialistas en bienestar y estética personalizada en un entorno de lujo y tranquilidad.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="footer__col-title">Navegación</h3>
+        <ul class="footer__links">
+          <li><a href="#inicio">Home</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#profesionales">Profesionales</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="footer__col-title">Servicios</h3>
+        <ul class="footer__links">
+          <li><a href="booking.html">Tratamientos Faciales</a></li>
+          <li><a href="booking.html">Masajes &amp; Spa</a></li>
+          <li><a href="booking.html">Manicura &amp; Pedicura</a></li>
+          <li><a href="booking.html">Peluquería</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="footer__col-title">Legal</h3>
+        <ul class="footer__links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Cookies</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© 2025 Lumina Studio. All rights reserved.</span>
+      <span>Diseñado con ♥ en Madrid</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
