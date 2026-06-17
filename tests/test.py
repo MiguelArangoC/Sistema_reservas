@@ -6,7 +6,6 @@ import unittest
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
-
 ROOT_DIR = Path(__file__).resolve().parents[1]
 BACKEND_DIR = ROOT_DIR / "backend"
 sys.path.insert(0, str(BACKEND_DIR))
@@ -165,12 +164,16 @@ class ReservationAppTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"html", response.data.lower())
 
-    def test_services_endpoint_lists_only_active_services_ordered_by_category_and_name(self):
+    def test_services_endpoint_lists_only_active_services_ordered_by_category_and_name(
+        self,
+    ):
         response = self.client.get("/api/services")
 
         self.assertEqual(response.status_code, 200)
         services = response.get_json()
-        self.assertEqual([service["name"] for service in services], ["Corte", "Manicure"])
+        self.assertEqual(
+            [service["name"] for service in services], ["Corte", "Manicure"]
+        )
         self.assertNotIn("Servicio oculto", [service["name"] for service in services])
 
     def test_service_detail_and_categories(self):
@@ -182,12 +185,18 @@ class ReservationAppTestCase(unittest.TestCase):
         self.assertEqual(categories_response.status_code, 200)
         self.assertEqual(categories_response.get_json(), ["Cabello", "Uñas"])
 
-    def test_professionals_endpoint_lists_active_professionals_and_filters_by_service(self):
+    def test_professionals_endpoint_lists_active_professionals_and_filters_by_service(
+        self,
+    ):
         list_response = self.client.get("/api/professionals")
-        filter_response = self.client.get(f"/api/professionals/by-service/{self.haircut_id}")
+        filter_response = self.client.get(
+            f"/api/professionals/by-service/{self.haircut_id}"
+        )
 
         self.assertEqual(list_response.status_code, 200)
-        self.assertEqual([prof["name"] for prof in list_response.get_json()], ["Ana", "Bea"])
+        self.assertEqual(
+            [prof["name"] for prof in list_response.get_json()], ["Ana", "Bea"]
+        )
         self.assertEqual(filter_response.status_code, 200)
         self.assertEqual([prof["name"] for prof in filter_response.get_json()], ["Ana"])
 
@@ -204,7 +213,9 @@ class ReservationAppTestCase(unittest.TestCase):
         invalid_response = self.client.get(f"/api/availability/{self.ana_id}/bad-date")
         past_response = self.client.get(f"/api/availability/{self.ana_id}/2000-01-01")
         sunday = next_weekday(6)
-        no_hours_response = self.client.get(f"/api/availability/{self.ana_id}/{sunday.isoformat()}")
+        no_hours_response = self.client.get(
+            f"/api/availability/{self.ana_id}/{sunday.isoformat()}"
+        )
 
         self.assertEqual(invalid_response.status_code, 400)
         self.assertEqual(past_response.status_code, 200)
@@ -220,7 +231,9 @@ class ReservationAppTestCase(unittest.TestCase):
             "client_phone": "3005556677",
             "client_address": "Calle 1 #2-3",
             "notes": "Sin acetona",
-            "appointment_datetime": datetime.combine(self.monday_date, time(10, 45)).isoformat(),
+            "appointment_datetime": datetime.combine(
+                self.monday_date, time(10, 45)
+            ).isoformat(),
         }
 
         create_response = self.client.post("/api/appointments", json=payload)
@@ -252,7 +265,9 @@ class ReservationAppTestCase(unittest.TestCase):
                 "service_id": self.manicure_id,
                 "client_name": "Cliente",
                 "client_phone": "3000000000",
-                "appointment_datetime": datetime.combine(self.monday_date, time(11, 15)).isoformat(),
+                "appointment_datetime": datetime.combine(
+                    self.monday_date, time(11, 15)
+                ).isoformat(),
             },
         )
         bad_datetime_response = self.client.post(
@@ -288,7 +303,9 @@ class ReservationAppTestCase(unittest.TestCase):
         self.assertEqual(valid_file_response.status_code, 201)
         saved_url = valid_file_response.get_json()["url"]
         self.assertTrue(saved_url.startswith("/uploads/"))
-        self.assertTrue(Path(self.uploads_dir.name, saved_url.removeprefix("/uploads/")).exists())
+        self.assertTrue(
+            Path(self.uploads_dir.name, saved_url.removeprefix("/uploads/")).exists()
+        )
 
 
 if __name__ == "__main__":
