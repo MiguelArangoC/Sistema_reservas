@@ -1,4 +1,5 @@
 from datetime import datetime
+from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -19,6 +20,8 @@ class Professional(db.Model):
     photo_url   = db.Column(db.String(512))
     bio         = db.Column(db.Text)
     title       = db.Column(db.String(120))   # e.g. "Especialista en Skincare"
+    username    = db.Column(db.String(80), unique=True)
+    password_hash = db.Column(db.String(255))
     rating      = db.Column(db.Float, default=5.0)
     reviews     = db.Column(db.Integer, default=0)
     is_active   = db.Column(db.Boolean, default=True)
@@ -26,7 +29,14 @@ class Professional(db.Model):
 
     services       = db.relationship("Service", secondary=professional_services, back_populates="professionals")
     working_hours  = db.relationship("WorkingHours", back_populates="professional", cascade="all, delete-orphan")
+    unavailable_slots = db.relationship("UnavailableSlot", back_populates="professional", cascade="all, delete-orphan")
     appointments   = db.relationship("Appointment", back_populates="professional")
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return bool(self.password_hash and check_password_hash(self.password_hash, password))
 
     def to_dict(self):
         return {
@@ -35,6 +45,7 @@ class Professional(db.Model):
             "photo_url":  self.photo_url,
             "bio":        self.bio,
             "title":      self.title,
+            "username":   self.username,
             "rating":     self.rating,
             "reviews":    self.reviews,
             "services":   [s.id for s in self.services],
@@ -90,6 +101,29 @@ class WorkingHours(db.Model):
         }
 
 
+class UnavailableSlot(db.Model):
+    __tablename__ = "unavailable_slots"
+
+    id = db.Column(db.Integer, primary_key=True)
+    professional_id = db.Column(db.Integer, db.ForeignKey("professionals.id"), nullable=False)
+    start_datetime = db.Column(db.DateTime, nullable=False)
+    end_datetime = db.Column(db.DateTime, nullable=False)
+    reason = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    professional = db.relationship("Professional", back_populates="unavailable_slots")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "professional_id": self.professional_id,
+            "start_datetime": self.start_datetime.isoformat(),
+            "end_datetime": self.end_datetime.isoformat(),
+            "reason": self.reason,
+            "created_at": self.created_at.isoformat(),
+        }
+
+
 class Appointment(db.Model):
     __tablename__ = "appointments"
 
@@ -102,7 +136,7 @@ class Appointment(db.Model):
     notes                 = db.Column(db.Text)                 # nullable
     design_image_url      = db.Column(db.String(512))          # nullable
     appointment_datetime  = db.Column(db.DateTime, nullable=False)
-    status                = db.Column(db.String(20), default="confirmed")  # confirmed | cancelled
+    status                = db.Column(db.String(20), default="pending")  # pending | confirmed | completed | cancelled
     created_at            = db.Column(db.DateTime, default=datetime.utcnow)
 
     professional = db.relationship("Professional", back_populates="appointments")

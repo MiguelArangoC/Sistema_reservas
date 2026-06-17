@@ -1,6 +1,6 @@
 from datetime import datetime, date, time, timedelta
 from flask import Blueprint, jsonify, request, abort
-from models import db, Professional, WorkingHours, Appointment, Service
+from models import db, Professional, WorkingHours, Appointment, Service, UnavailableSlot
 
 availability_bp = Blueprint("availability", __name__)
 
@@ -72,12 +72,22 @@ def get_availability(professional_id: int, date_str: str):
 
     booked_times = {a.appointment_datetime.strftime("%H:%M") for a in booked}
 
+    blocked = UnavailableSlot.query.filter(
+        UnavailableSlot.professional_id == professional_id,
+        UnavailableSlot.start_datetime < end_of_day,
+        UnavailableSlot.end_datetime > start_of_day,
+    ).all()
+
     # Filter out booked slots and past slots (for today)
     now = datetime.now().time() if target_date == date.today() else None
 
     available = []
     for slot in all_slots:
         if slot in booked_times:
+            continue
+        slot_start = datetime.combine(target_date, datetime.strptime(slot, "%H:%M").time())
+        slot_end = slot_start + timedelta(minutes=duration)
+        if any(block.start_datetime < slot_end and block.end_datetime > slot_start for block in blocked):
             continue
         if now:
             slot_time = datetime.strptime(slot, "%H:%M").time()

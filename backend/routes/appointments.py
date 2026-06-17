@@ -21,16 +21,14 @@ def create_appointment():
     if missing:
         abort(400, description=f"Missing fields: {', '.join(missing)}")
 
-    # Validate professional
-    prof = Professional.query.get(data["professional_id"])
-    if not prof:
-        abort(404, description="Professional not found.")
-
-    # If "any professional" (id=0) — pick one automatically (first available)
     if data["professional_id"] == 0:
         prof = Professional.query.filter_by(is_active=True).first()
         if not prof:
             abort(404, description="No professionals available.")
+    else:
+        prof = Professional.query.get(data["professional_id"])
+        if not prof:
+            abort(404, description="Professional not found.")
 
     # Validate service
     service = Service.query.get(data["service_id"])
@@ -47,8 +45,7 @@ def create_appointment():
     conflict = Appointment.query.filter_by(
         professional_id=prof.id,
         appointment_datetime=appt_dt,
-        status="confirmed",
-    ).first()
+    ).filter(Appointment.status.in_(["pending", "confirmed"])).first()
     if conflict:
         abort(409, description="This time slot is already booked.")
 
@@ -61,12 +58,27 @@ def create_appointment():
         notes                = data.get("notes"),
         design_image_url     = data.get("design_image_url"),
         appointment_datetime = appt_dt,
-        status               = "confirmed",
+        status               = "pending",
     )
     db.session.add(appointment)
     db.session.commit()
 
     return jsonify(appointment.to_dict()), 201
+
+
+@appointments_bp.route("/api/appointments", methods=["GET"])
+def list_appointments():
+    professional_id = request.args.get("professional_id", type=int)
+    include_done = request.args.get("include_done", "false").lower() == "true"
+
+    query = Appointment.query
+    if professional_id:
+        query = query.filter_by(professional_id=professional_id)
+    if not include_done:
+        query = query.filter(Appointment.status.in_(["pending", "confirmed"]))
+
+    appointments = query.order_by(Appointment.appointment_datetime.asc()).all()
+    return jsonify([appt.to_dict() for appt in appointments])
 
 
 @appointments_bp.route("/api/appointments/<int:appointment_id>", methods=["GET"])
@@ -81,6 +93,30 @@ def cancel_appointment(appointment_id: int):
     appt.status = "cancelled"
     db.session.commit()
     return jsonify(appt.to_dict())
+
+
+@appointments_bp.route("/api/appointments/<int:appointment_id>/confirm", methods=["PATCH"])
+def confirm_appointment(appointment_id: int):
+    appt = Appointment.query.get_or_404(appointment_id)
+    appt.status = "confirmed"
+    db.session.commit()
+    return jsonify(appt.to_dict())
+
+
+@appointments_bp.route("/api/appointments/<int:appointment_id>/complete", methods=["PATCH"])
+def complete_appointment(appointment_id: int):
+    appt = Appointment.query.get_or_404(appointment_id)
+    appt.status = "completed"
+    db.session.commit()
+    return jsonify(appt.to_dict())
+
+
+@appointments_bp.route("/api/appointments/<int:appointment_id>", methods=["DELETE"])
+def delete_appointment(appointment_id: int):
+    appt = Appointment.query.get_or_404(appointment_id)
+    db.session.delete(appt)
+    db.session.commit()
+    return jsonify({"message": "Appointment deleted."})
 
 
 @appointments_bp.route("/api/upload", methods=["POST"])

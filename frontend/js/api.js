@@ -37,6 +37,30 @@ export async function fetchProfessionalsByService(serviceId) {
   return _request(`/api/professionals/by-service/${serviceId}`);
 }
 
+export async function loginProfessional(username, password) {
+  return _request("/api/professionals/login", {
+    method: "POST",
+    body: JSON.stringify({ username, password }),
+  });
+}
+
+export async function fetchProfessionalBlocks(professionalId) {
+  return _request(`/api/professionals/${professionalId}/unavailable`);
+}
+
+export async function createProfessionalBlock(professionalId, payload) {
+  return _request(`/api/professionals/${professionalId}/unavailable`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteProfessionalBlock(professionalId, blockId) {
+  return _request(`/api/professionals/${professionalId}/unavailable/${blockId}`, {
+    method: "DELETE",
+  });
+}
+
 // ── Availability ──────────────────────────────────────────────────────────────
 export async function fetchAvailability(professionalId, dateStr, serviceId) {
   const qs = serviceId ? `?service_id=${serviceId}` : "";
@@ -53,6 +77,22 @@ export async function createAppointment(payload) {
 
 export async function fetchAppointment(id) {
   return _request(`/api/appointments/${id}`);
+}
+
+export async function fetchProfessionalAppointments(professionalId) {
+  return _request(`/api/appointments?professional_id=${professionalId}`);
+}
+
+export async function confirmAppointment(id) {
+  return _request(`/api/appointments/${id}/confirm`, { method: "PATCH" });
+}
+
+export async function completeAppointment(id) {
+  return _request(`/api/appointments/${id}/complete`, { method: "PATCH" });
+}
+
+export async function deleteAppointment(id) {
+  return _request(`/api/appointments/${id}`, { method: "DELETE" });
 }
 
 // ── Upload ────────────────────────────────────────────────────────────────────

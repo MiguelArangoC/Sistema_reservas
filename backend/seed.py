@@ -26,8 +26,14 @@ IMAGES = {
 def seed():
     app = create_app()
     with app.app_context():
+        db.session.execute(db.text("DROP TABLE IF EXISTS blocked_slots CASCADE"))
+        db.session.commit()
+        db.drop_all()
+        db.create_all()
+
         # Clear existing data (order matters due to FK constraints)
         db.session.execute(db.text("DELETE FROM appointments"))
+        db.session.execute(db.text("DELETE FROM unavailable_slots"))
         db.session.execute(db.text("DELETE FROM working_hours"))
         db.session.execute(db.text("DELETE FROM professional_services"))
         db.session.execute(db.text("DELETE FROM professionals"))
@@ -58,6 +64,7 @@ def seed():
             name="Elena Martínez",
             photo_url=IMAGES["elena"],
             title="Especialista en Skincare",
+            username="elena",
             bio="Experta en tratamientos faciales con más de 8 años de experiencia. Especializada en tecnología avanzada y manejo de pieles sensibles.",
             rating=4.9,
             reviews=120,
@@ -66,6 +73,7 @@ def seed():
             name="Julian Rivera",
             photo_url=IMAGES["julian"],
             title="Maestro de Masajes",
+            username="julian",
             bio="Terapeuta certificado en masajes terapéuticos y relajantes. Su técnica combina métodos orientales y occidentales para el máximo bienestar.",
             rating=4.8,
             reviews=85,
@@ -74,12 +82,14 @@ def seed():
             name="Sofia Cavero",
             photo_url=IMAGES["sofia"],
             title="Makeup Artist & Hair Stylist",
+            username="sofia",
             bio="Artista del maquillaje y estilismo capilar premiada internacionalmente. Su pasión es resaltar la belleza única de cada cliente.",
             rating=4.9,
             reviews=97,
         )
 
-        for prof in [elena, julian, sofia]:
+        for prof, password in [(elena, "elena123"), (julian, "julian123"), (sofia, "sofia123")]:
+            prof.set_password(password)
             db.session.add(prof)
         db.session.flush()
 
@@ -109,10 +119,10 @@ def seed():
             db.session.add(WorkingHours(professional_id=julian.id, day_of_week=day, start_time=time(10, 0), end_time=time(19, 0)))
 
         db.session.commit()
-        print("✅  Database seeded successfully!")
-        print(f"   • {len(services)} services")
-        print(f"   • 3 professionals (Elena, Julian, Sofia)")
-        print(f"   • Working hours configured")
+        print("Database seeded successfully!")
+        print(f"   - {len(services)} services")
+        print("   - 3 professionals (Elena, Julian, Sofia)")
+        print("   - Working hours configured")
 
 
 if __name__ == "__main__":
