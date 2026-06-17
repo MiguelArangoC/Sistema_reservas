@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso Profesional - Lumina Studio</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/professional.css">
+</head>
+<body class="professional-page">
+  <main class="professional-shell">
+    <section class="pro-login" id="login-panel" aria-labelledby="login-title">
+      <div class="pro-login__card">
+        <aside class="pro-login__image" aria-hidden="true">
+          <div>
+            <h1>Lumina Studio</h1>
+            <p>Curating excellence through serene professionalism and boutique expertise.</p>
+          </div>
+        </aside>
+
+        <section class="pro-login__form">
+          <div class="login-symbol">◆</div>
+          <h2 id="login-title">Acceso para Profesionales</h2>
+          <p>Gestione sus citas y servicios</p>
+
+          <p class="login-alert" id="login-error" hidden>Las credenciales son incorrectas</p>
+
+          <form id="login-form">
+            <label class="pro-field">
+              <span>Usuario</span>
+              <input id="login-username" autocomplete="username" placeholder="nombre@lumina.com" required>
+            </label>
+            <label class="pro-field">
+              <span>Contraseña</span>
+              <input id="login-password" type="password" autocomplete="current-password" placeholder="********" required>
+            </label>
+            <a class="forgot-link" href="#">¿Olvidaste tu contraseña?</a>
+            <button class="pro-primary-btn" type="submit">Iniciar sesión →</button>
+          </form>
+
+          <a class="back-home" href="index.html">← Volver al sitio principal</a>
+        </section>
+      </div>
+      <small class="login-footer">© 2024 Lumina Studio. Reservado para uso profesional.</small>
+    </section>
+  </main>
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>

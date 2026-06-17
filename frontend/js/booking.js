@@ -4,27 +4,29 @@
  */
 
 import {
-  fetchServices, fetchCategories,
+  fetchServices,
+  fetchCategories,
   fetchProfessionalsByService,
   fetchAvailability,
-  createAppointment, uploadDesignImage,
+  createAppointment,
+  uploadDesignImage,
 } from "./api.js";
 
 // ── State ─────────────────────────────────────────────────────────────────────
 const state = {
   currentStep: 1,
   selectedService: null,
-  selectedProfessional: null,  // null means "Any professional"
+  selectedProfessional: null, // null means "Any professional"
   selectedProfessionalId: null,
-  selectedDate: null,           // Date object
-  selectedTime: null,           // "HH:MM" string
+  selectedDate: null, // Date object
+  selectedTime: null, // "HH:MM" string
   uploadedImageUrl: null,
   allServices: [],
   allProfessionals: [],
 };
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
-const steps   = document.querySelectorAll(".booking-step");
+const steps = document.querySelectorAll(".booking-step");
 const progSteps = document.querySelectorAll(".progress-step");
 
 // ── Step navigation ───────────────────────────────────────────────────────────
@@ -34,8 +36,20 @@ function goToStep(n) {
   steps.forEach((s, i) => s.classList.toggle("active", i + 1 === n));
   progSteps.forEach((ps, i) => {
     ps.classList.toggle("active", i + 1 === n);
-    ps.classList.toggle("done",   i + 1 < n);
+    ps.classList.toggle("done", i + 1 < n);
   });
+
+  // Hide design upload for specific categories in Step 3
+  if (n === 3 && state.selectedService) {
+    const designGroup = document.getElementById("design-upload-group");
+    if (designGroup) {
+      const hideDesign = ["Masajes & Spa", "Tratamientos Faciales"].includes(
+        state.selectedService.category,
+      );
+      designGroup.style.display = hideDesign ? "none" : "";
+    }
+  }
+
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -48,7 +62,10 @@ async function initStep1() {
   let activeCategory = "all";
 
   try {
-    const [services, categories] = await Promise.all([fetchServices(), fetchCategories()]);
+    const [services, categories] = await Promise.all([
+      fetchServices(),
+      fetchCategories(),
+    ]);
     state.allServices = services;
 
     // Build category sidebar
@@ -78,23 +95,27 @@ async function initStep1() {
     function filterCategory(cat, clickedBtn) {
       activeCategory = cat;
       visibleCount = 6;
-      sidebar?.querySelectorAll(".category-btn").forEach((b) => b.classList.remove("active"));
+      sidebar
+        ?.querySelectorAll(".category-btn")
+        .forEach((b) => b.classList.remove("active"));
       clickedBtn.classList.add("active");
       renderServiceCards();
     }
 
     function renderServiceCards() {
       if (!grid) return;
-      const filtered = activeCategory === "all"
-        ? state.allServices
-        : state.allServices.filter((s) => s.category === activeCategory);
+      const filtered =
+        activeCategory === "all"
+          ? state.allServices
+          : state.allServices.filter((s) => s.category === activeCategory);
       const visible = filtered.slice(0, visibleCount);
 
       grid.innerHTML = "";
       visible.forEach((svc) => {
         const card = document.createElement("article");
         card.className = "service-booking-card";
-        if (state.selectedService?.id === svc.id) card.classList.add("selected");
+        if (state.selectedService?.id === svc.id)
+          card.classList.add("selected");
         card.dataset.id = svc.id;
         card.innerHTML = `
           <div class="service-booking-card__img-wrap">
@@ -114,11 +135,13 @@ async function initStep1() {
       });
 
       if (showMoreBtn) {
-        showMoreBtn.style.display = filtered.length > visibleCount ? "" : "none";
+        showMoreBtn.style.display =
+          filtered.length > visibleCount ? "" : "none";
       }
     }
   } catch (err) {
-    if (grid) grid.innerHTML = `<p style="color:var(--clr-text-muted);grid-column:1/-1;text-align:center">
+    if (grid)
+      grid.innerHTML = `<p style="color:var(--clr-text-muted);grid-column:1/-1;text-align:center">
       Error cargando servicios. Asegúrate de que el backend está corriendo en <strong>localhost:5000</strong>.</p>`;
     console.error(err);
   }
@@ -140,7 +163,10 @@ async function initStep2() {
   const profList = document.getElementById("prof-list");
   if (!profList) return;
 
-  profList.innerHTML = `<div class="skeleton" style="height:80px;border-radius:12px;margin-bottom:12px"></div>`.repeat(3);
+  profList.innerHTML =
+    `<div class="skeleton" style="height:80px;border-radius:12px;margin-bottom:12px"></div>`.repeat(
+      3,
+    );
 
   try {
     const profs = await fetchProfessionalsByService(state.selectedService.id);
@@ -234,9 +260,23 @@ function renderCalendar() {
   const month = calDate.getMonth();
 
   // Disable prev button if we're in current month
-  if (prevBtn) prevBtn.disabled = (year === now.getFullYear() && month === now.getMonth());
+  if (prevBtn)
+    prevBtn.disabled = year === now.getFullYear() && month === now.getMonth();
 
-  const monthNames = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  const monthNames = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
   if (monthLabel) monthLabel.textContent = `${monthNames[month]} ${year}`;
 
   const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
@@ -260,20 +300,26 @@ function renderCalendar() {
     cell.textContent = d;
 
     const thisDate = new Date(year, month, d);
-    const today    = new Date();
+    const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     if (thisDate < today) {
       cell.classList.add("disabled");
     } else {
-      if (thisDate.toDateString() === today.toDateString()) cell.classList.add("today");
+      if (thisDate.toDateString() === today.toDateString())
+        cell.classList.add("today");
 
-      if (state.selectedDate && thisDate.toDateString() === state.selectedDate.toDateString()) {
+      if (
+        state.selectedDate &&
+        thisDate.toDateString() === state.selectedDate.toDateString()
+      ) {
         cell.classList.add("selected");
       }
 
       cell.addEventListener("click", () => {
-        document.querySelectorAll(".calendar__day").forEach((c) => c.classList.remove("selected"));
+        document
+          .querySelectorAll(".calendar__day")
+          .forEach((c) => c.classList.remove("selected"));
         cell.classList.add("selected");
         state.selectedDate = thisDate;
         state.selectedTime = null;
@@ -290,17 +336,25 @@ async function loadSlots(date) {
   const container = document.getElementById("slots-container");
   if (!container) return;
 
-  container.innerHTML = `<div class="skeleton" style="height:40px;width:100%;border-radius:8px;margin-bottom:8px"></div>`.repeat(2);
+  container.innerHTML =
+    `<div class="skeleton" style="height:40px;width:100%;border-radius:8px;margin-bottom:8px"></div>`.repeat(
+      2,
+    );
 
-  const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+  const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
   // For "any professional" pick first available
-  const profId = state.selectedProfessionalId === 0
-    ? (state.allProfessionals[0]?.id ?? 1)
-    : state.selectedProfessionalId;
+  const profId =
+    state.selectedProfessionalId === 0
+      ? (state.allProfessionals[0]?.id ?? 1)
+      : state.selectedProfessionalId;
 
   try {
-    const slots = await fetchAvailability(profId, dateStr, state.selectedService?.id);
+    const slots = await fetchAvailability(
+      profId,
+      dateStr,
+      state.selectedService?.id,
+    );
     renderSlots(slots);
   } catch (err) {
     container.innerHTML = `<p class="slots-empty">Error cargando horarios.</p>`;
@@ -337,7 +391,9 @@ function renderSlots(slots) {
   container.innerHTML = html;
   container.querySelectorAll(".slot-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      container.querySelectorAll(".slot-btn").forEach((b) => b.classList.remove("selected"));
+      container
+        .querySelectorAll(".slot-btn")
+        .forEach((b) => b.classList.remove("selected"));
       btn.classList.add("selected");
       state.selectedTime = btn.dataset.time;
     });
@@ -361,14 +417,18 @@ document.getElementById("btn-next-step2")?.addEventListener("click", () => {
 
 // ── STEP 3: Details + Summary ─────────────────────────────────────────────────
 function renderSummaryCard() {
-  const svc  = state.selectedService;
+  const svc = state.selectedService;
   const prof = state.selectedProfessional;
   const date = state.selectedDate;
   const time = state.selectedTime;
 
   if (!svc || !date || !time) return;
 
-  const dateStr = date.toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+  const dateStr = date.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
   const profName = prof?.id === 0 ? "Cualquier disponible" : (prof?.name ?? "");
 
   // Summary image
@@ -379,9 +439,9 @@ function renderSummaryCard() {
   if (titleEl) titleEl.textContent = svc.name;
 
   const rows = {
-    "summary-prof":  profName,
-    "summary-date":  dateStr,
-    "summary-time":  time,
+    "summary-prof": profName,
+    "summary-date": dateStr,
+    "summary-time": time,
     "summary-total": `$${svc.price}`,
   };
   Object.entries(rows).forEach(([id, val]) => {
@@ -395,7 +455,8 @@ const homeToggle = document.getElementById("home-service-toggle");
 const addressGroup = document.getElementById("address-group");
 
 homeToggle?.addEventListener("change", () => {
-  if (addressGroup) addressGroup.style.display = homeToggle.checked ? "" : "none";
+  if (addressGroup)
+    addressGroup.style.display = homeToggle.checked ? "" : "none";
 });
 
 // ── Image upload ──────────────────────────────────────────────────────────────
@@ -412,7 +473,9 @@ uploadZone?.addEventListener("dragover", (e) => {
   uploadZone.classList.add("drag-over");
 });
 
-uploadZone?.addEventListener("dragleave", () => uploadZone.classList.remove("drag-over"));
+uploadZone?.addEventListener("dragleave", () =>
+  uploadZone.classList.remove("drag-over"),
+);
 
 uploadZone?.addEventListener("drop", (e) => {
   e.preventDefault();
@@ -430,7 +493,7 @@ function handleFileSelect(file) {
   const reader = new FileReader();
   reader.onload = (e) => {
     if (uploadPreviewImg) uploadPreviewImg.src = e.target.result;
-    if (uploadZone)    uploadZone.style.display = "none";
+    if (uploadZone) uploadZone.style.display = "none";
     if (uploadPreview) uploadPreview.style.display = "";
   };
   reader.readAsDataURL(file);
@@ -439,9 +502,9 @@ function handleFileSelect(file) {
 }
 
 uploadRemove?.addEventListener("click", () => {
-  if (uploadZone)    uploadZone.style.display = "";
+  if (uploadZone) uploadZone.style.display = "";
   if (uploadPreview) uploadPreview.style.display = "none";
-  if (uploadInput)   uploadInput.value = "";
+  if (uploadInput) uploadInput.value = "";
   state._pendingFile = null;
   state.uploadedImageUrl = null;
 });
@@ -461,28 +524,29 @@ document.getElementById("btn-confirm")?.addEventListener("click", async () => {
       state.uploadedImageUrl = url;
     }
 
-    const svc   = state.selectedService;
-    const prof  = state.selectedProfessional;
-    const date  = state.selectedDate;
-    const time  = state.selectedTime;
+    const svc = state.selectedService;
+    const prof = state.selectedProfessional;
+    const date = state.selectedDate;
+    const time = state.selectedTime;
 
     // Build ISO datetime: combine date + time string
     const [h, m] = time.split(":");
     const apptDate = new Date(date);
     apptDate.setHours(parseInt(h), parseInt(m), 0, 0);
 
-    const profId = (prof?.id === 0)
-      ? (state.allProfessionals[0]?.id ?? 1)
-      : prof?.id;
+    const profId =
+      prof?.id === 0 ? (state.allProfessionals[0]?.id ?? 1) : prof?.id;
 
     const payload = {
-      professional_id:      profId,
-      service_id:           svc.id,
-      client_name:          document.getElementById("client-name").value.trim(),
-      client_phone:         document.getElementById("client-phone").value.trim(),
-      client_address:       homeToggle?.checked ? document.getElementById("client-address").value.trim() : null,
-      notes:                document.getElementById("client-notes").value.trim() || null,
-      design_image_url:     state.uploadedImageUrl || null,
+      professional_id: profId,
+      service_id: svc.id,
+      client_name: document.getElementById("client-name").value.trim(),
+      client_phone: document.getElementById("client-phone").value.trim(),
+      client_address: homeToggle?.checked
+        ? document.getElementById("client-address").value.trim()
+        : null,
+      notes: document.getElementById("client-notes").value.trim() || null,
+      design_image_url: state.uploadedImageUrl || null,
       appointment_datetime: apptDate.toISOString(),
     };
 
@@ -497,7 +561,7 @@ document.getElementById("btn-confirm")?.addEventListener("click", async () => {
 
 function validateForm() {
   let valid = true;
-  const name  = document.getElementById("client-name");
+  const name = document.getElementById("client-name");
   const phone = document.getElementById("client-phone");
 
   [name, phone].forEach((input) => {
@@ -508,7 +572,8 @@ function validateForm() {
       valid = false;
     } else {
       input?.classList.remove("error");
-      if (err?.classList.contains("form-error")) err.classList.remove("visible");
+      if (err?.classList.contains("form-error"))
+        err.classList.remove("visible");
     }
   });
 
@@ -530,13 +595,18 @@ function showConfirmation(appt) {
   const modal = document.getElementById("confirm-modal");
   if (!modal) return;
 
-  const svc   = state.selectedService;
-  const date  = state.selectedDate;
-  const time  = state.selectedTime;
-  const dateStr = date?.toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
-  const profName = state.selectedProfessional?.id === 0
-    ? (state.allProfessionals[0]?.name ?? "Cualquier disponible")
-    : (state.selectedProfessional?.name ?? "");
+  const svc = state.selectedService;
+  const date = state.selectedDate;
+  const time = state.selectedTime;
+  const dateStr = date?.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const profName =
+    state.selectedProfessional?.id === 0
+      ? (state.allProfessionals[0]?.name ?? "Cualquier disponible")
+      : (state.selectedProfessional?.name ?? "");
 
   const modalDetail = document.getElementById("modal-detail");
   if (modalDetail) {
@@ -577,9 +647,13 @@ async function checkUrlPreselect() {
 document.addEventListener("DOMContentLoaded", async () => {
   // Nav
   const nav = document.querySelector(".nav");
-  window.addEventListener("scroll", () => {
-    nav?.classList.toggle("scrolled", window.scrollY > 20);
-  }, { passive: true });
+  window.addEventListener(
+    "scroll",
+    () => {
+      nav?.classList.toggle("scrolled", window.scrollY > 20);
+    },
+    { passive: true },
+  );
 
   // Hide address group initially
   if (addressGroup) addressGroup.style.display = "none";

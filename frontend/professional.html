@@ -1,160 +1,184 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Profesional - Lumina Studio</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/professional.css">
-</head>
-<body class="professional-page">
-  <main class="professional-shell">
-    <section class="pro-login" id="login-panel" aria-labelledby="login-title">
-      <div class="pro-login__card">
-        <aside class="pro-login__image" aria-hidden="true">
-          <div>
-            <h1>Lumina Studio</h1>
-            <p>Curating excellence through serene professionalism and boutique expertise.</p>
-          </div>
-        </aside>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Panel Profesional - Lumina Studio</title>
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/professional.css" />
+    </head>
+    <body class="professional-page">
+        <script>
+            if (!sessionStorage.getItem("professionalSession")) {
+                window.location.href = "login.html";
+            }
+        </script>
+        <main class="professional-shell">
+            <section class="pro-dashboard" id="dashboard">
+                <header class="pro-header">
+                    <div>
+                        <h1>Panel de Profesional</h1>
+                        <p>
+                            Gestiona tu agenda de hoy y asegura una experiencia
+                            excepcional para cada cliente.
+                        </p>
+                    </div>
+                    <button class="logout-link" id="logout-btn">
+                        Cerrar sesion
+                    </button>
+                </header>
 
-        <section class="pro-login__form">
-          <div class="login-symbol">◆</div>
-          <h2 id="login-title">Acceso para Profesionales</h2>
-          <p>Gestione sus citas y servicios</p>
+                <div class="pro-dashboard__grid">
+                    <section
+                        class="appointments-area"
+                        aria-labelledby="appointments-title"
+                    >
+                        <div class="section-row">
+                            <h2 id="appointments-title">Proximas Citas</h2>
+                            <span id="today-label"></span>
+                        </div>
+                        <div
+                            class="pro-appointments"
+                            id="appointments-list"
+                        ></div>
+                    </section>
 
-          <p class="login-alert" id="login-error" hidden>Las credenciales son incorrectas</p>
+                    <aside class="schedule-area">
+                        <section
+                            class="block-card"
+                            aria-labelledby="blocks-title"
+                        >
+                            <h2 id="blocks-title">Bloquear Horario</h2>
+                            <div class="mini-week" id="mini-week"></div>
+                            <p class="slot-label">Seleccionar Franja Horaria</p>
+                            <div class="quick-slots" id="quick-slots">
+                                <button data-start="09:00" data-end="10:00">
+                                    09:00 - 10:00
+                                </button>
+                                <button data-start="10:00" data-end="11:00">
+                                    10:00 - 11:00
+                                </button>
+                                <button data-start="11:00" data-end="12:00">
+                                    11:00 - 12:00
+                                </button>
+                                <button data-start="14:00" data-end="15:00">
+                                    14:00 - 15:00
+                                </button>
+                                <button data-start="15:00" data-end="16:00">
+                                    15:00 - 16:00
+                                </button>
+                                <button data-start="16:00" data-end="17:00">
+                                    16:00 - 17:00
+                                </button>
+                            </div>
+                            <button
+                                class="pro-primary-btn"
+                                id="confirm-block-btn"
+                            >
+                                Confirmar Bloqueo
+                            </button>
+                        </section>
 
-          <form id="login-form">
-            <label class="pro-field">
-              <span>Usuario</span>
-              <input id="login-username" autocomplete="username" placeholder="nombre@lumina.com" required>
-            </label>
-            <label class="pro-field">
-              <span>Contrasena</span>
-              <input id="login-password" type="password" autocomplete="current-password" placeholder="********" required>
-            </label>
-            <a class="forgot-link" href="#">¿Olvidaste tu contrasena?</a>
-            <button class="pro-primary-btn" type="submit">Iniciar sesion →</button>
-          </form>
+                        <section class="reminder-card">
+                            <strong>ⓘ Recordatorio</strong>
+                            <p id="reminder-text">
+                                Tienes citas pendientes por revisar.
+                            </p>
+                        </section>
+                    </aside>
+                </div>
 
-          <a class="back-home" href="index.html">← Volver al sitio principal</a>
-        </section>
-      </div>
-      <small class="login-footer">© 2024 Lumina Studio. Reservado para uso profesional.</small>
-    </section>
+                <footer class="pro-footer">
+                    <div>
+                        <h2>Lumina Studio</h2>
+                        <p>
+                            El espacio donde la belleza y la serenidad se
+                            encuentran para crear experiencias unicas de cuidado
+                            personal.
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Enlaces</h3>
+                        <a href="#">Horarios de Atencion</a>
+                        <a href="#">Politicas de Cancelacion</a>
+                        <a href="#">Terminos del Servicio</a>
+                    </div>
+                    <div class="pro-footer__right">
+                        <span>⌯ ♡</span>
+                        <small
+                            >© 2024 Lumina Studio. All rights reserved.</small
+                        >
+                    </div>
+                </footer>
+            </section>
+        </main>
 
-    <section class="pro-dashboard" id="dashboard" hidden>
-      <header class="pro-header">
-        <div>
-          <h1>Panel de Profesional</h1>
-          <p>Gestiona tu agenda de hoy y asegura una experiencia excepcional para cada cliente.</p>
+        <div class="pro-overlay" id="appointment-modal">
+            <article class="appointment-modal">
+                <button
+                    class="modal-close"
+                    id="modal-close"
+                    aria-label="Cerrar"
+                >
+                    ×
+                </button>
+                <div id="appointment-detail"></div>
+            </article>
         </div>
-        <button class="logout-link" id="logout-btn">Cerrar sesion</button>
-      </header>
 
-      <div class="pro-dashboard__grid">
-        <section class="appointments-area" aria-labelledby="appointments-title">
-          <div class="section-row">
-            <h2 id="appointments-title">Proximas Citas</h2>
-            <span id="today-label"></span>
-          </div>
-          <div class="pro-appointments" id="appointments-list"></div>
-        </section>
-
-        <aside class="schedule-area">
-          <section class="block-card" aria-labelledby="blocks-title">
-            <h2 id="blocks-title">Bloquear Horario</h2>
-            <div class="mini-week" id="mini-week"></div>
-            <p class="slot-label">Seleccionar Franja Horaria</p>
-            <div class="quick-slots" id="quick-slots">
-              <button data-start="09:00" data-end="10:00">09:00 - 10:00</button>
-              <button data-start="10:00" data-end="11:00">10:00 - 11:00</button>
-              <button data-start="11:00" data-end="12:00">11:00 - 12:00</button>
-              <button data-start="14:00" data-end="15:00">14:00 - 15:00</button>
-              <button data-start="15:00" data-end="16:00">15:00 - 16:00</button>
-              <button data-start="16:00" data-end="17:00">16:00 - 17:00</button>
-            </div>
-            <button class="pro-primary-btn" id="confirm-block-btn">Confirmar Bloqueo</button>
-          </section>
-
-          <section class="reminder-card">
-            <strong>ⓘ Recordatorio</strong>
-            <p id="reminder-text">Tienes citas pendientes por revisar.</p>
-          </section>
-        </aside>
-      </div>
-
-      <footer class="pro-footer">
-        <div>
-          <h2>Lumina Studio</h2>
-          <p>El espacio donde la belleza y la serenidad se encuentran para crear experiencias unicas de cuidado personal.</p>
+        <div class="pro-overlay pro-overlay--nested" id="cancel-modal">
+            <article class="confirm-dialog">
+                <h2>Cancelar Cita</h2>
+                <p>
+                    Por favor, indica el motivo de la cancelacion para informar
+                    al cliente adecuadamente.
+                </p>
+                <label class="pro-field">
+                    <span>Motivo de la cancelacion</span>
+                    <textarea id="cancel-reason" rows="4"></textarea>
+                </label>
+                <div class="dialog-actions">
+                    <button class="outline-action" id="cancel-back-btn">
+                        Volver
+                    </button>
+                    <button class="pro-primary-btn" id="cancel-confirm-btn">
+                        Confirmar
+                    </button>
+                </div>
+            </article>
         </div>
-        <div>
-          <h3>Enlaces</h3>
-          <a href="#">Horarios de Atencion</a>
-          <a href="#">Politicas de Cancelacion</a>
-          <a href="#">Terminos del Servicio</a>
+
+        <div class="pro-overlay pro-overlay--nested" id="complete-modal">
+            <article class="confirm-dialog">
+                <h2>Cita completada</h2>
+                <p>Esta cita desaparecera del panel de proximas citas.</p>
+                <div class="dialog-actions">
+                    <button class="outline-action" id="complete-back-btn">
+                        Volver
+                    </button>
+                    <button class="pro-primary-btn" id="complete-confirm-btn">
+                        Confirmar
+                    </button>
+                </div>
+            </article>
         </div>
-        <div class="pro-footer__right">
-          <span>⌯ ♡</span>
-          <small>© 2024 Lumina Studio. All rights reserved.</small>
+
+        <div class="pro-overlay pro-overlay--nested" id="confirm-modal">
+            <article class="confirm-dialog">
+                <h2>Cita confirmada</h2>
+                <p>La cita quedara marcada como confirmada en tu agenda.</p>
+                <div class="dialog-actions">
+                    <button class="outline-action" id="confirm-back-btn">
+                        Volver
+                    </button>
+                    <button class="pro-primary-btn" id="confirm-confirm-btn">
+                        Confirmar
+                    </button>
+                </div>
+            </article>
         </div>
-      </footer>
-    </section>
-  </main>
 
-  <div class="pro-overlay" id="appointment-modal">
-    <article class="appointment-modal">
-      <button class="modal-close" id="modal-close" aria-label="Cerrar">×</button>
-      <div id="appointment-detail"></div>
-      <div class="detail-actions">
-        <a class="pro-primary-btn" id="whatsapp-btn" target="_blank" rel="noopener">▣ Contactar cliente (WhatsApp)</a>
-        <button class="outline-action" id="complete-appointment-btn">Cita completada</button>
-        <button class="text-danger" id="cancel-appointment-btn">Cancelar cita</button>
-        <button class="outline-action" id="confirm-appointment-btn">Confirmar cita</button>
-      </div>
-    </article>
-  </div>
-
-  <div class="pro-overlay pro-overlay--nested" id="cancel-modal">
-    <article class="confirm-dialog">
-      <h2>Cancelar Cita</h2>
-      <p>Por favor, indica el motivo de la cancelacion para informar al cliente adecuadamente.</p>
-      <label class="pro-field">
-        <span>Motivo de la cancelacion</span>
-        <textarea id="cancel-reason" rows="4"></textarea>
-      </label>
-      <div class="dialog-actions">
-        <button class="outline-action" id="cancel-back-btn">Volver</button>
-        <button class="pro-primary-btn" id="cancel-confirm-btn">Confirmar</button>
-      </div>
-    </article>
-  </div>
-
-  <div class="pro-overlay pro-overlay--nested" id="complete-modal">
-    <article class="confirm-dialog">
-      <h2>Cita completada</h2>
-      <p>Esta cita desaparecera del panel de proximas citas.</p>
-      <div class="dialog-actions">
-        <button class="outline-action" id="complete-back-btn">Volver</button>
-        <button class="pro-primary-btn" id="complete-confirm-btn">Confirmar</button>
-      </div>
-    </article>
-  </div>
-
-  <div class="pro-overlay pro-overlay--nested" id="confirm-modal">
-    <article class="confirm-dialog">
-      <h2>Cita confirmada</h2>
-      <p>La cita quedara marcada como confirmada en tu agenda.</p>
-      <div class="dialog-actions">
-        <button class="outline-action" id="confirm-back-btn">Volver</button>
-        <button class="pro-primary-btn" id="confirm-confirm-btn">Confirmar</button>
-      </div>
-    </article>
-  </div>
-
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="js/professional.js"></script>
-</body>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <script type="module" src="js/professional.js"></script>
+    </body>
 </html>

@@ -7,8 +7,11 @@ import { fetchServices, fetchProfessionals } from "./api.js";
 // ── Scroll animations ─────────────────────────────────────────────────────────
 function initScrollAnimations() {
   const observer = new IntersectionObserver(
-    (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("visible"); }),
-    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    (entries) =>
+      entries.forEach((e) => {
+        if (e.isIntersecting) e.target.classList.add("visible");
+      }),
+    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
   );
   document.querySelectorAll(".fade-in").forEach((el) => observer.observe(el));
 }
@@ -19,9 +22,13 @@ function initNav() {
   const hamburger = document.querySelector(".nav__hamburger");
   const links = document.querySelector(".nav__links");
 
-  window.addEventListener("scroll", () => {
-    nav.classList.toggle("scrolled", window.scrollY > 20);
-  }, { passive: true });
+  window.addEventListener(
+    "scroll",
+    () => {
+      nav.classList.toggle("scrolled", window.scrollY > 20);
+    },
+    { passive: true },
+  );
 
   hamburger?.addEventListener("click", () => {
     links.classList.toggle("open");
@@ -36,12 +43,14 @@ function initNav() {
       entries.forEach((e) => {
         if (e.isIntersecting) {
           navLinks.forEach((l) => l.classList.remove("active"));
-          const link = document.querySelector(`.nav__links a[href="#${e.target.id}"]`);
+          const link = document.querySelector(
+            `.nav__links a[href="#${e.target.id}"]`,
+          );
           link?.classList.add("active");
         }
       });
     },
-    { threshold: 0.4 }
+    { threshold: 0.4 },
   );
   sections.forEach((s) => sectionObserver.observe(s));
 }
@@ -50,24 +59,32 @@ function initNav() {
 function initHeroParallax() {
   const heroBg = document.querySelector(".hero__bg");
   if (!heroBg) return;
-  window.addEventListener("scroll", () => {
-    const y = window.scrollY * 0.25;
-    heroBg.style.transform = `scale(1) translateY(${y}px)`;
-  }, { passive: true });
+  window.addEventListener(
+    "scroll",
+    () => {
+      const y = window.scrollY * 0.25;
+      heroBg.style.transform = `scale(1) translateY(${y}px)`;
+    },
+    { passive: true },
+  );
   // Trigger loaded class for Ken Burns
-  requestAnimationFrame(() => document.querySelector(".hero")?.classList.add("loaded"));
+  requestAnimationFrame(() =>
+    document.querySelector(".hero")?.classList.add("loaded"),
+  );
 }
 
-// ── Render services (landing) ─────────────────────────────────────────────────
+// ── Render services (landing carousel) ────────────────────────────────────────
 async function renderServices() {
   const grid = document.getElementById("services-grid");
+  const prevBtn = document.getElementById("services-prev");
+  const nextBtn = document.getElementById("services-next");
   if (!grid) return;
 
   try {
     const services = await fetchServices();
     grid.innerHTML = "";
 
-    services.slice(0, 6).forEach((svc, i) => {
+    services.forEach((svc, i) => {
       const card = document.createElement("article");
       card.className = `service-card fade-in fade-in--delay-${(i % 3) + 1}`;
       card.innerHTML = `
@@ -84,6 +101,15 @@ async function renderServices() {
           <a href="booking.html?service=${svc.id}" class="btn btn--dark" style="width:100%;justify-content:center;">Seleccionar</a>
         </div>`;
       grid.appendChild(card);
+    });
+
+    // Carousel controls
+    const scrollAmount = 340; // card width + gap approx
+    prevBtn?.addEventListener("click", () => {
+      grid.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+    });
+    nextBtn?.addEventListener("click", () => {
+      grid.scrollBy({ left: scrollAmount, behavior: "smooth" });
     });
 
     // Re-observe new elements
@@ -104,7 +130,8 @@ async function renderProfessionals() {
     grid.innerHTML = "";
 
     profs.forEach((p, i) => {
-      const stars = "★".repeat(Math.round(p.rating)) + "☆".repeat(5 - Math.round(p.rating));
+      const stars =
+        "★".repeat(Math.round(p.rating)) + "☆".repeat(5 - Math.round(p.rating));
       const card = document.createElement("article");
       card.className = `professional-card fade-in fade-in--delay-${(i % 3) + 1}`;
       card.innerHTML = `
