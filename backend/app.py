@@ -6,7 +6,11 @@ from models import db
 
 
 def create_app():
-    app = Flask(__name__, static_folder=None)
+    app = Flask(
+        __name__,
+        static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "../frontend"),
+        static_url_path=""
+    )
     app.config.from_object(Config)
 
     # Extensions
@@ -23,6 +27,11 @@ def create_app():
     app.register_blueprint(professionals_bp)
     app.register_blueprint(availability_bp)
     app.register_blueprint(appointments_bp)
+
+    # Root route to serve the frontend
+    @app.route("/")
+    def index():
+        return send_from_directory(app.static_folder, "index.html")
 
     # Serve uploaded design images
     @app.route("/uploads/<path:filename>")
@@ -55,4 +64,6 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=app.config["DEBUG"], port=5000)
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=app.config["DEBUG"])
+
