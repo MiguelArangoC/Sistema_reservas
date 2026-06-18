@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin — Lumina Studio</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/professional.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="professional-page admin-page">
+  <script>
+    if (!sessionStorage.getItem("adminSession")) {
+      window.location.href = "admin-login.html";
+    }
+  </script>
+
+  <!-- ── Sidebar nav ──────────────────────────────────────────────────────── -->
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="admin-sidebar__brand">
+      <span class="admin-sidebar__logo">Lumina</span>
+      <span class="admin-sidebar__role">Administrador</span>
+    </div>
+
+    <nav class="admin-nav" aria-label="Navegación del panel">
+      <button class="admin-nav__item active" data-section="overview">
+        <span class="admin-nav__icon">◈</span>
+        Resumen
+      </button>
+      <button class="admin-nav__item" data-section="appointments">
+        <span class="admin-nav__icon">□</span>
+        Citas
+      </button>
+      <button class="admin-nav__item" data-section="revenue">
+        <span class="admin-nav__icon">◇</span>
+        Ingresos
+      </button>
+      <button class="admin-nav__item" data-section="professionals">
+        <span class="admin-nav__icon">◎</span>
+        Profesionales
+      </button>
+      <button class="admin-nav__item" data-section="notifications">
+        <span class="admin-nav__icon">◉</span>
+        Notificaciones
+      </button>
+    </nav>
+
+    <button class="admin-logout" id="admin-logout-btn">
+      Cerrar sesión
+    </button>
+  </aside>
+
+  <!-- ── Main content ─────────────────────────────────────────────────────── -->
+  <main class="admin-main" id="admin-main">
+
+    <!-- ── Top bar ────────────────────────────────────────────────────────── -->
+    <header class="admin-topbar">
+      <div>
+        <h1 class="admin-topbar__title" id="section-title">Resumen del negocio</h1>
+        <p class="admin-topbar__date" id="today-date"></p>
+      </div>
+      <div class="admin-topbar__user">
+        <span class="admin-topbar__avatar">A</span>
+        <span id="admin-username-display">Admin</span>
+      </div>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SECTION: OVERVIEW (default landing)
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="admin-section active" id="section-overview">
+      <div class="admin-kpi-row" id="overview-kpis">
+        <!-- populated by JS -->
+        <div class="admin-kpi skeleton" style="height:110px"></div>
+        <div class="admin-kpi skeleton" style="height:110px"></div>
+        <div class="admin-kpi skeleton" style="height:110px"></div>
+        <div class="admin-kpi skeleton" style="height:110px"></div>
+      </div>
+
+      <!-- Busy professionals today -->
+      <div class="admin-card" style="margin-top: var(--space-2xl)">
+        <div class="admin-card__header">
+          <h2 class="admin-card__title">Profesionales activos hoy</h2>
+          <span class="admin-card__badge" id="busy-date-label"></span>
+        </div>
+        <div id="busy-professionals-list" class="admin-busy-list">
+          <div class="skeleton" style="height:68px;border-radius:8px;margin-bottom:8px"></div>
+          <div class="skeleton" style="height:68px;border-radius:8px;margin-bottom:8px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SECTION: CITAS (HU-15)
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="admin-section" id="section-appointments">
+      <div class="admin-filter-bar">
+        <button class="admin-filter-btn active" data-filter="day">Hoy</button>
+        <button class="admin-filter-btn" data-filter="week">Esta semana</button>
+        <button class="admin-filter-btn" data-filter="month">Este mes</button>
+      </div>
+
+      <!-- Status summary chips -->
+      <div class="admin-status-row" id="appt-status-row">
+        <div class="admin-status-chip admin-status-chip--pending">
+          <span class="admin-status-chip__count" id="appt-count-reserved">—</span>
+          <span class="admin-status-chip__label">Reservadas</span>
+        </div>
+        <div class="admin-status-chip admin-status-chip--confirmed">
+          <span class="admin-status-chip__count" id="appt-count-confirmed">—</span>
+          <span class="admin-status-chip__label">Confirmadas</span>
+        </div>
+        <div class="admin-status-chip admin-status-chip--completed">
+          <span class="admin-status-chip__count" id="appt-count-completed">—</span>
+          <span class="admin-status-chip__label">Completadas</span>
+        </div>
+        <div class="admin-status-chip admin-status-chip--cancelled">
+          <span class="admin-status-chip__count" id="appt-count-cancelled">—</span>
+          <span class="admin-status-chip__label">Canceladas</span>
+        </div>
+      </div>
+
+      <!-- Appointments table -->
+      <div class="admin-card">
+        <div class="admin-card__header">
+          <h2 class="admin-card__title">Detalle de citas</h2>
+          <span class="admin-card__total" id="appt-total-label"></span>
+        </div>
+        <div class="admin-table-wrap" id="appointments-table-wrap">
+          <table class="admin-table" id="appointments-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Servicio</th>
+                <th>Profesional</th>
+                <th>Fecha &amp; Hora</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="appointments-tbody">
+              <tr><td colspan="6" class="admin-table__loading">Cargando citas…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SECTION: INGRESOS (HU-16)
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="admin-section" id="section-revenue">
+      <div class="admin-filter-bar">
+        <button class="admin-filter-btn active" data-filter="day">Hoy</button>
+        <button class="admin-filter-btn" data-filter="week">Esta semana</button>
+        <button class="admin-filter-btn" data-filter="month">Este mes</button>
+      </div>
+
+      <!-- Main revenue KPI -->
+      <div class="admin-revenue-hero">
+        <div>
+          <p class="admin-revenue-hero__label">Ingresos totales</p>
+          <p class="admin-revenue-hero__amount" id="revenue-total">—</p>
+          <p class="admin-revenue-hero__sub" id="revenue-appointments-count"></p>
+        </div>
+        <div class="admin-revenue-hero__icon">◇</div>
+      </div>
+
+      <!-- By category -->
+      <div class="admin-card" style="margin-top: var(--space-xl)">
+        <div class="admin-card__header">
+          <h2 class="admin-card__title">Ingresos por categoría</h2>
+        </div>
+        <div id="revenue-by-category" class="admin-category-bars">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <!-- Daily breakdown -->
+      <div class="admin-card" style="margin-top: var(--space-xl)" id="revenue-daily-card">
+        <div class="admin-card__header">
+          <h2 class="admin-card__title">Desglose diario</h2>
+        </div>
+        <div id="revenue-daily-chart" class="admin-bar-chart">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SECTION: PROFESIONALES (HU-17 + HU-18 + HU-19)
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="admin-section" id="section-professionals">
+
+      <!-- HU-17: Profesionales ocupados hoy -->
+      <div class="admin-card" style="margin-bottom: var(--space-2xl)">
+        <div class="admin-card__header">
+          <h2 class="admin-card__title">Ocupados hoy</h2>
+          <input type="date" id="busy-date-input" class="admin-date-input">
+        </div>
+        <div id="busy-professionals-section" class="admin-busy-list">
+          <div class="skeleton" style="height:68px;border-radius:8px;margin-bottom:8px"></div>
+        </div>
+      </div>
+
+      <!-- HU-18 + HU-19: Gestión de equipo -->
+      <div class="admin-card">
+        <div class="admin-card__header">
+          <h2 class="admin-card__title">Gestión del equipo</h2>
+          <!-- HU-19 trigger button -->
+          <button class="admin-btn admin-btn--primary" id="add-professional-btn">
+            + Añadir profesional
+          </button>
+        </div>
+        <div id="professionals-list-wrap">
+          <div class="admin-professionals-grid" id="professionals-grid">
+            <div class="skeleton" style="height:110px;border-radius:8px"></div>
+            <div class="skeleton" style="height:110px;border-radius:8px"></div>
+            <div class="skeleton" style="height:110px;border-radius:8px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SECTION: NOTIFICACIONES (HU-20)
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="admin-section" id="section-notifications">
+      <div class="admin-card">
+        <div class="admin-card__header">
+          <h2 class="admin-card__title">Recordatorios WhatsApp</h2>
+          <span class="admin-card__badge">HU-20</span>
+        </div>
+
+        <div class="admin-notif-hero">
+          <div class="admin-notif-hero__icon">◉</div>
+          <div>
+            <p class="admin-notif-hero__title">Enviar recordatorios del día</p>
+            <p class="admin-notif-hero__desc">
+              Envía un mensaje de WhatsApp al cliente con fecha y servicio de su cita,
+              y al profesional con su agenda del día seleccionado.
+            </p>
+          </div>
+        </div>
+
+        <div class="admin-notif-form">
+          <label class="admin-notif-label" for="notif-date">Selecciona la fecha</label>
+          <div class="admin-notif-row">
+            <input type="date" id="notif-date" class="admin-date-input admin-date-input--lg">
+            <button class="admin-btn admin-btn--primary admin-btn--lg" id="send-notif-btn">
+              Enviar recordatorios
+            </button>
+          </div>
+        </div>
+
+        <!-- Config notice -->
+        <div class="admin-notif-config" id="notif-config-notice">
+          <strong>⚙ Configuración requerida</strong>
+          <p>
+            Para enviar mensajes reales, configura en tu <code>.env</code>:<br>
+            <code>WHATSAPP_API_URL</code> y <code>WHATSAPP_API_KEY</code>
+            usando <a href="https://www.callmebot.com/blog/free-api-whatsapp-messages/" target="_blank" rel="noopener">CallMeBot</a>
+            (gratuito) o tu proveedor preferido (Twilio, etc.).<br>
+            Mientras tanto, el sistema opera en <strong>modo simulado</strong> y registra los mensajes aquí.
+          </p>
+        </div>
+
+        <!-- Results log -->
+        <div id="notif-log" class="admin-notif-log" style="display:none">
+          <div class="admin-notif-log__header">
+            <span id="notif-log-title">Resultado del envío</span>
+            <button class="admin-notif-log__clear" id="clear-log-btn">Limpiar</button>
+          </div>
+          <div id="notif-log-items"></div>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- /admin-main -->
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       MODALS
+  ════════════════════════════════════════════════════════════════════════ -->
+
+  <!-- HU-19: Add Professional modal -->
+  <div class="admin-overlay" id="add-prof-modal" role="dialog" aria-modal="true" aria-labelledby="add-prof-title">
+    <div class="admin-dialog">
+      <button class="admin-dialog__close" id="add-prof-close" aria-label="Cerrar">×</button>
+      <h2 class="admin-dialog__title" id="add-prof-title">Añadir profesional</h2>
+      <p class="admin-dialog__desc">El nuevo profesional podrá acceder al panel con estas credenciales.</p>
+
+      <div id="add-prof-error" class="admin-dialog__error" style="display:none"></div>
+
+      <label class="pro-field">
+        <span>Nombre completo</span>
+        <input id="new-prof-name" placeholder="Ej. María López" autocomplete="off">
+      </label>
+      <label class="pro-field">
+        <span>Cargo / Especialidad</span>
+        <input id="new-prof-title" placeholder="Ej. Especialista en Skincare" autocomplete="off">
+      </label>
+      <label class="pro-field">
+        <span>Usuario *</span>
+        <input id="new-prof-username" placeholder="Ej. maria.lopez" autocomplete="off" required>
+      </label>
+      <label class="pro-field">
+        <span>Contraseña *</span>
+        <input id="new-prof-password" type="password" placeholder="Mínimo 6 caracteres" required>
+      </label>
+
+      <button class="pro-primary-btn admin-btn" id="confirm-add-prof-btn">
+        Confirmar registro de usuario
+      </button>
+    </div>
+  </div>
+
+  <!-- HU-18: Delete confirmation modal -->
+  <div class="admin-overlay" id="delete-prof-modal" role="dialog" aria-modal="true" aria-labelledby="delete-prof-title">
+    <div class="admin-dialog admin-dialog--sm">
+      <h2 class="admin-dialog__title" id="delete-prof-title">Eliminar profesional</h2>
+      <p class="admin-dialog__desc" id="delete-prof-desc">
+        Esta acción desactivará al profesional del sistema. Sus citas anteriores se conservarán en el historial.
+      </p>
+      <div class="dialog-actions">
+        <button class="outline-action" id="delete-prof-cancel">Volver</button>
+        <button class="pro-primary-btn admin-btn admin-btn--danger" id="delete-prof-confirm">
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="admin-toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

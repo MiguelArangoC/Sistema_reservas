@@ -22,11 +22,13 @@ def create_app():
     from routes.professionals import professionals_bp
     from routes.availability  import availability_bp
     from routes.appointments  import appointments_bp
+    from routes.admin         import admin_bp
 
     app.register_blueprint(services_bp)
     app.register_blueprint(professionals_bp)
     app.register_blueprint(availability_bp)
     app.register_blueprint(appointments_bp)
+    app.register_blueprint(admin_bp)
 
     # Root route to serve the frontend
     @app.route("/")

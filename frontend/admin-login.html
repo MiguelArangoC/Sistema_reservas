@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acceso Administrador — Lumina Studio</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/professional.css" />
+    <link rel="stylesheet" href="css/admin.css" />
+  </head>
+  <body class="professional-page">
+    <main class="professional-shell">
+      <section class="pro-login" aria-labelledby="admin-login-title">
+        <div class="pro-login__card">
+          <aside class="pro-login__image admin-login__image" aria-hidden="true">
+            <div>
+              <div class="admin-login__badge">⬡ Administrador</div>
+              <h1>Lumina Studio</h1>
+              <p>
+                Panel de control para administradores. Gestiona citas, ingresos,
+                equipos y notificaciones.
+              </p>
+            </div>
+          </aside>
+
+          <section class="pro-login__form">
+            <div class="login-symbol" style="color: var(--clr-dark)">◈</div>
+            <h2 id="admin-login-title" style="color: var(--clr-dark)">
+              Acceso Administrador
+            </h2>
+            <p>Panel de gestión del negocio</p>
+
+            <p class="login-alert" id="login-error" hidden>
+              Credenciales incorrectas. Verifica tu usuario y contraseña.
+            </p>
+
+            <form id="admin-login-form">
+              <label class="pro-field">
+                <span>Usuario</span>
+                <input
+                  id="admin-username"
+                  autocomplete="username"
+                  placeholder="admin"
+                  required
+                />
+              </label>
+              <label class="pro-field">
+                <span>Contraseña</span>
+                <input
+                  id="admin-password"
+                  type="password"
+                  autocomplete="current-password"
+                  placeholder="••••••••"
+                  required
+                />
+              </label>
+              <button
+                class="pro-primary-btn admin-btn"
+                type="submit"
+                id="login-submit-btn"
+              >
+                Entrar al panel →
+              </button>
+            </form>
+
+            <a class="back-home" href="index.html"
+              >← Volver al sitio principal</a
+            >
+          </section>
+        </div>
+        <small class="login-footer"
+          >© 2025 Lumina Studio. Acceso restringido solo a
+          administradores.</small
+        >
+      </section>
+    </main>
+    <script type="module" src="js/admin-login.js"></script>
+  </body>
+</html>
