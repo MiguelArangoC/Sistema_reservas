@@ -12,13 +12,11 @@ sys.path.insert(0, str(BACKEND_DIR))
 
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 os.environ["DEBUG"] = "False"
-os.environ["SECRET_KEY"] = "test-secret-key-for-testing-only"
 for pg_key in ("PGUSER", "PGPASSWORD", "PGHOST", "PGPORT", "PGDATABASE"):
     os.environ[pg_key] = ""
 
 from app import create_app  # noqa: E402
 from models import Appointment, Professional, Service, WorkingHours, db  # noqa: E402
-from auth import create_token  # noqa: E402
 
 
 def next_weekday(day_of_week):
@@ -37,19 +35,13 @@ class ReservationAppTestCase(unittest.TestCase):
             TESTING=True,
             UPLOAD_FOLDER=self.uploads_dir.name,
             MAX_CONTENT_LENGTH=5 * 1024 * 1024,
-            RATELIMIT_ENABLED=False,
         )
         self.client = self.app.test_client()
 
         with self.app.app_context():
-            self.app.config["SECRET_KEY"] = "test-secret-key-for-testing-only"
             db.drop_all()
             db.create_all()
             self._seed_data()
-            self.prof_token = create_token(self.ana_id)
-
-    def _auth_header(self):
-        return {"Authorization": f"Bearer {self.prof_token}"}
 
     def tearDown(self):
         with self.app.app_context():
@@ -63,7 +55,7 @@ class ReservationAppTestCase(unittest.TestCase):
             description="Manicure spa",
             price=50000,
             duration_minutes=60,
-            category="Unas",
+            category="Uñas",
             is_active=True,
         )
         inactive_service = Service(
@@ -88,21 +80,17 @@ class ReservationAppTestCase(unittest.TestCase):
             title="Estilista",
             rating=4.9,
             reviews=12,
-            username="ana",
             is_active=True,
             services=[manicure, haircut],
         )
-        ana.set_password("password123")
         bea = Professional(
             name="Bea",
             title="Manicurista",
             rating=4.8,
             reviews=8,
-            username="bea",
             is_active=True,
             services=[manicure],
         )
-        bea.set_password("password123")
         inactive_professional = Professional(
             name="Carla",
             title="Inactiva",
@@ -195,7 +183,7 @@ class ReservationAppTestCase(unittest.TestCase):
         self.assertEqual(detail_response.status_code, 200)
         self.assertEqual(detail_response.get_json()["name"], "Manicure")
         self.assertEqual(categories_response.status_code, 200)
-        self.assertEqual(categories_response.get_json(), ["Cabello", "Unas"])
+        self.assertEqual(categories_response.get_json(), ["Cabello", "Uñas"])
 
     def test_professionals_endpoint_lists_active_professionals_and_filters_by_service(
         self,
@@ -261,10 +249,7 @@ class ReservationAppTestCase(unittest.TestCase):
         conflict_response = self.client.post("/api/appointments", json=payload)
         self.assertEqual(conflict_response.status_code, 409)
 
-        cancel_response = self.client.patch(
-            f"/api/appointments/{created['id']}/cancel",
-            headers=self._auth_header(),
-        )
+        cancel_response = self.client.patch(f"/api/appointments/{created['id']}/cancel")
         self.assertEqual(cancel_response.status_code, 200)
         self.assertEqual(cancel_response.get_json()["status"], "cancelled")
 
@@ -301,20 +286,14 @@ class ReservationAppTestCase(unittest.TestCase):
         self.assertEqual(bad_datetime_response.status_code, 400)
 
     def test_upload_image_validates_input_and_saves_allowed_files(self):
-        no_file_response = self.client.post(
-            "/api/upload",
-            headers=self._auth_header(),
-            data={},
-        )
+        no_file_response = self.client.post("/api/upload", data={})
         invalid_file_response = self.client.post(
             "/api/upload",
-            headers=self._auth_header(),
             data={"file": (io.BytesIO(b"not an image"), "design.txt")},
             content_type="multipart/form-data",
         )
         valid_file_response = self.client.post(
             "/api/upload",
-            headers=self._auth_header(),
             data={"file": (io.BytesIO(b"fake png content"), "design.png")},
             content_type="multipart/form-data",
         )
@@ -327,68 +306,6 @@ class ReservationAppTestCase(unittest.TestCase):
         self.assertTrue(
             Path(self.uploads_dir.name, saved_url.removeprefix("/uploads/")).exists()
         )
-
-    def test_protected_endpoints_reject_requests_without_token(self):
-        responses = [
-            self.client.patch(f"/api/appointments/1/cancel"),
-            self.client.patch(f"/api/appointments/1/confirm"),
-            self.client.patch(f"/api/appointments/1/complete"),
-            self.client.delete(f"/api/appointments/1"),
-        ]
-        for resp in responses:
-            self.assertEqual(resp.status_code, 401)
-
-    def test_protected_endpoints_reject_invalid_token(self):
-        bad_headers = {"Authorization": "Bearer invalid-token"}
-        responses = [
-            self.client.patch(f"/api/appointments/1/cancel", headers=bad_headers),
-            self.client.patch(f"/api/appointments/1/confirm", headers=bad_headers),
-            self.client.patch(f"/api/appointments/1/complete", headers=bad_headers),
-            self.client.delete(f"/api/appointments/1", headers=bad_headers),
-        ]
-        for resp in responses:
-            self.assertEqual(resp.status_code, 401)
-
-    def test_login_returns_token(self):
-        response = self.client.post(
-            "/api/professionals/login",
-            json={"username": "ana", "password": "password123"},
-        )
-        self.assertEqual(response.status_code, 200)
-        data = response.get_json()
-        self.assertIn("token", data)
-        self.assertIn("professional", data)
-        self.assertEqual(data["professional"]["name"], "Ana")
-
-    def test_login_fails_with_wrong_credentials(self):
-        response = self.client.post(
-            "/api/professionals/login",
-            json={"username": "ana", "password": "wrongpassword"},
-        )
-        self.assertEqual(response.status_code, 401)
-
-    def test_appointment_length_validation(self):
-        payload = {
-            "professional_id": self.ana_id,
-            "service_id": self.manicure_id,
-            "client_name": "A" * 121,
-            "client_phone": "3000000000",
-            "appointment_datetime": datetime.combine(
-                self.monday_date, time(11, 0)
-            ).isoformat(),
-        }
-        response = self.client.post("/api/appointments", json=payload)
-        self.assertEqual(response.status_code, 400)
-
-    def test_unavailable_slots_require_auth(self):
-        response = self.client.post(
-            f"/api/professionals/{self.ana_id}/unavailable",
-            json={
-                "start_datetime": "2025-01-01T09:00:00",
-                "end_datetime": "2025-01-01T10:00:00",
-            },
-        )
-        self.assertEqual(response.status_code, 401)
 
 
 if __name__ == "__main__":

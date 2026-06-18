@@ -3,7 +3,6 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request, abort, current_app
 from werkzeug.utils import secure_filename
 from models import db, Appointment, Professional, Service
-from auth import require_auth, limit_content_length
 
 appointments_bp = Blueprint("appointments", __name__)
 
@@ -14,7 +13,6 @@ def _allowed_file(filename: str) -> bool:
 
 
 @appointments_bp.route("/api/appointments", methods=["POST"])
-@limit_content_length(16384)
 def create_appointment():
     data = request.get_json(force=True)
 
@@ -22,15 +20,6 @@ def create_appointment():
     missing  = [f for f in required if not data.get(f)]
     if missing:
         abort(400, description=f"Missing fields: {', '.join(missing)}")
-
-    if len(data["client_name"]) > 120:
-        abort(400, description="El nombre del cliente es demasiado largo (max 120 caracteres).")
-    if len(data["client_phone"]) > 30:
-        abort(400, description="El telefono es demasiado largo (max 30 caracteres).")
-    if data.get("client_address") and len(data["client_address"]) > 255:
-        abort(400, description="La direccion es demasiado larga (max 255 caracteres).")
-    if data.get("notes") and len(data["notes"]) > 500:
-        abort(400, description="Las notas son demasiado largas (max 500 caracteres).")
 
     if data["professional_id"] == 0:
         prof = Professional.query.filter_by(is_active=True).first()
@@ -69,7 +58,7 @@ def create_appointment():
         notes                = data.get("notes"),
         design_image_url     = data.get("design_image_url"),
         appointment_datetime = appt_dt,
-        status               = "confirmed",
+        status               = "pending",
     )
     db.session.add(appointment)
     db.session.commit()
@@ -99,7 +88,6 @@ def get_appointment(appointment_id: int):
 
 
 @appointments_bp.route("/api/appointments/<int:appointment_id>/cancel", methods=["PATCH"])
-@require_auth
 def cancel_appointment(appointment_id: int):
     appt = Appointment.query.get_or_404(appointment_id)
     appt.status = "cancelled"
@@ -108,7 +96,6 @@ def cancel_appointment(appointment_id: int):
 
 
 @appointments_bp.route("/api/appointments/<int:appointment_id>/confirm", methods=["PATCH"])
-@require_auth
 def confirm_appointment(appointment_id: int):
     appt = Appointment.query.get_or_404(appointment_id)
     appt.status = "confirmed"
@@ -117,7 +104,6 @@ def confirm_appointment(appointment_id: int):
 
 
 @appointments_bp.route("/api/appointments/<int:appointment_id>/complete", methods=["PATCH"])
-@require_auth
 def complete_appointment(appointment_id: int):
     appt = Appointment.query.get_or_404(appointment_id)
     appt.status = "completed"
@@ -126,7 +112,6 @@ def complete_appointment(appointment_id: int):
 
 
 @appointments_bp.route("/api/appointments/<int:appointment_id>", methods=["DELETE"])
-@require_auth
 def delete_appointment(appointment_id: int):
     appt = Appointment.query.get_or_404(appointment_id)
     db.session.delete(appt)
@@ -135,8 +120,6 @@ def delete_appointment(appointment_id: int):
 
 
 @appointments_bp.route("/api/upload", methods=["POST"])
-@require_auth
-@limit_content_length(5 * 1024 * 1024)
 def upload_image():
     if "file" not in request.files:
         abort(400, description="No file part in request.")

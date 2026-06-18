@@ -1,7 +1,6 @@
 from datetime import datetime
 from flask import Blueprint, jsonify, request, abort
 from models import db, Professional, UnavailableSlot
-from auth import create_token, require_auth, require_professional_match, limit_content_length
 
 professionals_bp = Blueprint("professionals", __name__)
 
@@ -32,7 +31,6 @@ def get_professionals_by_service(service_id):
 
 
 @professionals_bp.route("/api/professionals/login", methods=["POST"])
-@limit_content_length(4096)
 def professional_login():
     data = request.get_json(force=True)
     username = (data.get("username") or "").strip()
@@ -41,16 +39,11 @@ def professional_login():
     if not username or not password:
         abort(400, description="Usuario y contrasena son obligatorios.")
 
-    if len(username) > 80:
-        abort(400, description="El nombre de usuario es demasiado largo.")
-
     professional = Professional.query.filter_by(username=username, is_active=True).first()
     if not professional or not professional.check_password(password):
         abort(401, description="Credenciales incorrectas.")
 
-    token = create_token(professional.id)
     return jsonify({
-        "token": token,
         "role": "professional",
         "professional": professional.to_dict(),
     })
@@ -69,8 +62,6 @@ def list_unavailable_slots(prof_id):
 
 
 @professionals_bp.route("/api/professionals/<int:prof_id>/unavailable", methods=["POST"])
-@require_professional_match
-@limit_content_length(4096)
 def create_unavailable_slot(prof_id):
     Professional.query.get_or_404(prof_id)
     data = request.get_json(force=True)
@@ -84,15 +75,11 @@ def create_unavailable_slot(prof_id):
     if end_dt <= start_dt:
         abort(400, description="La hora final debe ser posterior a la inicial.")
 
-    reason = data.get("reason")
-    if reason and len(reason) > 255:
-        abort(400, description="El motivo del bloqueo es demasiado largo (max 255 caracteres).")
-
     slot = UnavailableSlot(
         professional_id=prof_id,
         start_datetime=start_dt,
         end_datetime=end_dt,
-        reason=reason,
+        reason=data.get("reason"),
     )
     db.session.add(slot)
     db.session.commit()
@@ -100,7 +87,6 @@ def create_unavailable_slot(prof_id):
 
 
 @professionals_bp.route("/api/professionals/<int:prof_id>/unavailable/<int:slot_id>", methods=["DELETE"])
-@require_professional_match
 def delete_unavailable_slot(prof_id, slot_id):
     slot = UnavailableSlot.query.filter_by(id=slot_id, professional_id=prof_id).first_or_404()
     db.session.delete(slot)
