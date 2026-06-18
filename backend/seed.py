@@ -3,9 +3,9 @@ seed.py — Populate the database with demo data for Lumina Studio.
 Run:  python seed.py
 """
 
-from datetime import time
+from datetime import date, datetime, time, timedelta
 from app import create_app
-from models import db, Professional, Service, WorkingHours
+from models import db, Appointment, Professional, Service, WorkingHours
 
 # ── Unsplash image URLs (no API key needed, always available) ─────────────────
 IMAGES = {
@@ -20,7 +20,23 @@ IMAGES = {
     "elena":       "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=400&q=80",
     "julian":      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80",
     "sofia":       "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80",
+    "valentina":   "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80",
 }
+
+
+def _current_week_date(day_of_week: int) -> date:
+    today = date.today()
+    return today - timedelta(days=today.weekday()) + timedelta(days=day_of_week)
+
+
+def _current_month_date(day: int) -> date:
+    today = date.today()
+    last_day = (today.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+    return today.replace(day=min(day, last_day.day))
+
+
+def _dt(day: date, hour: int, minute: int = 0) -> datetime:
+    return datetime.combine(day, time(hour, minute))
 
 
 def seed():
@@ -87,8 +103,23 @@ def seed():
             rating=4.9,
             reviews=97,
         )
+        valentina = Professional(
+            name="Valentina Cruz",
+            photo_url=IMAGES["valentina"],
+            title="Nail Artist",
+            username="valentina",
+            bio="Profesional temporal desactivada para demostrar el estado inactivo en el panel de administración.",
+            rating=4.6,
+            reviews=32,
+            is_active=False,
+        )
 
-        for prof, password in [(elena, "elena123"), (julian, "julian123"), (sofia, "sofia123")]:
+        for prof, password in [
+            (elena, "elena123"),
+            (julian, "julian123"),
+            (sofia, "sofia123"),
+            (valentina, "valentina123"),
+        ]:
             prof.set_password(password)
             db.session.add(prof)
         db.session.flush()
@@ -99,6 +130,7 @@ def seed():
         elena.services  = [services[1], services[4], services[7]]          # Facials, Lifting
         julian.services = [services[3], services[5]]                        # Masajes
         sofia.services  = [services[0], services[2], services[6]]           # Manicura, Corte, Maquillaje
+        valentina.services = [services[0]]
 
         # All professionals can do any service as backup
         for s in services:
@@ -118,11 +150,51 @@ def seed():
         for day in range(6):  # Mon-Sat
             db.session.add(WorkingHours(professional_id=julian.id, day_of_week=day, start_time=time(10, 0), end_time=time(19, 0)))
 
+        # ── Admin dashboard appointments ─────────────────────────────────────
+        # Relative dates keep HU-15/HU-16/HU-17/HU-20 useful whenever the seed runs.
+        today = date.today()
+        week_days = [_current_week_date(i) for i in range(6)]
+        month_days = [_current_month_date(day) for day in (3, 9, 16, 23)]
+
+        appointments_data = [
+            # Today: every status bucket for the appointment admin view.
+            dict(professional=elena, service=services[4], client_name="Laura Gómez", client_phone="+573001112233", appointment_datetime=_dt(today, 9, 0), status="pending", notes="Primera valoración de piel sensible."),
+            dict(professional=julian, service=services[3], client_name="Andrés Pardo", client_phone="+573004445566", appointment_datetime=_dt(today, 10, 30), status="confirmed", notes="Prefiere masaje con presión media."),
+            dict(professional=sofia, service=services[0], client_name="Camila Reyes", client_phone="+573007778899", appointment_datetime=_dt(today, 12, 0), status="completed", notes="Diseño francés minimalista."),
+            dict(professional=elena, service=services[7], client_name="Natalia Rojas", client_phone="+573009991122", appointment_datetime=_dt(today, 15, 30), status="cancelled", notes="Canceló por viaje."),
+            dict(professional=sofia, service=services[6], client_name="Mariana Silva", client_phone="+573002223344", appointment_datetime=_dt(today, 17, 0), status="confirmed", notes="Prueba de maquillaje para boda."),
+
+            # Current week: feeds week filters, revenue and busy-professional ranking.
+            dict(professional=elena, service=services[1], client_name="Paula Torres", client_phone="+573003334455", appointment_datetime=_dt(week_days[0], 11, 0), status="completed"),
+            dict(professional=julian, service=services[5], client_name="Ricardo Mejía", client_phone="+573005556677", appointment_datetime=_dt(week_days[1], 16, 0), status="confirmed"),
+            dict(professional=sofia, service=services[2], client_name="Daniela León", client_phone="+573006667788", appointment_datetime=_dt(week_days[3], 14, 0), status="pending"),
+            dict(professional=elena, service=services[4], client_name="Verónica Castro", client_phone="+573008889900", appointment_datetime=_dt(week_days[4], 9, 30), status="completed"),
+            dict(professional=julian, service=services[3], client_name="Mateo Vargas", client_phone="+573001234567", appointment_datetime=_dt(week_days[5], 13, 0), status="cancelled"),
+
+            # Current month: gives the monthly revenue chart multiple bars.
+            dict(professional=sofia, service=services[6], client_name="Isabella Mora", client_phone="+573009876543", appointment_datetime=_dt(month_days[0], 10, 0), status="completed"),
+            dict(professional=elena, service=services[4], client_name="Luisa Fernanda", client_phone="+573004321098", appointment_datetime=_dt(month_days[1], 11, 30), status="confirmed"),
+            dict(professional=julian, service=services[5], client_name="Santiago Ríos", client_phone="+573002468135", appointment_datetime=_dt(month_days[2], 15, 0), status="completed"),
+            dict(professional=sofia, service=services[0], client_name="Alejandra Nieto", client_phone="+573001357924", appointment_datetime=_dt(month_days[3], 16, 30), status="pending"),
+        ]
+
+        for item in appointments_data:
+            db.session.add(Appointment(
+                professional_id=item["professional"].id,
+                service_id=item["service"].id,
+                client_name=item["client_name"],
+                client_phone=item["client_phone"],
+                notes=item.get("notes"),
+                appointment_datetime=item["appointment_datetime"],
+                status=item["status"],
+            ))
+
         db.session.commit()
         print("Database seeded successfully!")
         print(f"   - {len(services)} services")
-        print("   - 3 professionals (Elena, Julian, Sofia)")
+        print("   - 4 professionals (3 active, 1 inactive)")
         print("   - Working hours configured")
+        print(f"   - {len(appointments_data)} admin demo appointments")
 
 
 if __name__ == "__main__":
