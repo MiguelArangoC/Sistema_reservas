@@ -28,7 +28,7 @@ class Config:
     SQLALCHEMY_DATABASE_URI = raw_db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
-    MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", 5 * 1024 * 1024))  # 5 MB
+    MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", 1 * 1024 * 1024))  # 1 MB
     ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
+    CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5000").split(",")
     DEBUG = os.getenv("DEBUG", "True").lower() == "true"
-

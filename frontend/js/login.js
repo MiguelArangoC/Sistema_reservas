@@ -17,12 +17,14 @@ loginForm?.addEventListener("submit", async (event) => {
   try {
     const data = await loginProfessional(username, password);
 
+    sessionStorage.setItem("professionalToken", data.token);
+    sessionStorage.setItem("professionalSession", JSON.stringify(data.professional));
+
     if (data.role === "admin") {
       window.location.href = "admin.html";
       return;
     }
 
-    sessionStorage.setItem("professionalSession", JSON.stringify(data.professional));
     window.location.href = "professional.html";
   } catch (err) {
     errorAlert.hidden = false;

@@ -3,6 +3,14 @@ from flask import Flask, send_from_directory, jsonify
 from flask_cors import CORS
 from config import Config
 from models import db
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://",
+)
 
 
 def create_app():
@@ -15,7 +23,8 @@ def create_app():
 
     # Extensions
     db.init_app(app)
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    CORS(app, resources={r"/api/*": {"origins": Config.CORS_ORIGINS}})
+    limiter.init_app(app)
 
     # Register blueprints
     from routes.services      import services_bp
@@ -55,6 +64,14 @@ def create_app():
     def conflict(e):
         return jsonify({"error": str(e)}), 409
 
+    @app.errorhandler(413)
+    def request_entity_too_large(e):
+        return jsonify({"error": "El cuerpo de la solicitud es demasiado grande"}), 413
+
+    @app.errorhandler(429)
+    def too_many_requests(e):
+        return jsonify({"error": "Demasiadas solicitudes. Intenta de nuevo mas tarde."}), 429
+
     @app.errorhandler(500)
     def server_error(e):
         return jsonify({"error": "Internal server error"}), 500
@@ -70,4 +87,3 @@ if __name__ == "__main__":
     app = create_app()
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=app.config["DEBUG"])
-

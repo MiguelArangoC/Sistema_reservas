@@ -1,15 +1,13 @@
-/**
- * api.js — All backend API calls for Lumina Studio
- * Base URL can be overridden via localStorage key 'API_BASE'
- */
-
 const API_BASE = localStorage.getItem("API_BASE") || "http://localhost:5000";
 
+function _authHeaders() {
+  const token = sessionStorage.getItem("professionalToken");
+  return token ? { "Authorization": `Bearer ${token}` } : {};
+}
+
 async function _request(path, options = {}) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: { "Content-Type": "application/json", ...options.headers },
-    ...options,
-  });
+  const headers = { "Content-Type": "application/json", ..._authHeaders(), ...options.headers };
+  const res = await fetch(`${API_BASE}${path}`, { headers, ...options });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
   return data;
@@ -45,19 +43,23 @@ export async function loginProfessional(username, password) {
 }
 
 export async function fetchProfessionalBlocks(professionalId) {
-  return _request(`/api/professionals/${professionalId}/unavailable`);
+  return _request(`/api/professionals/${professionalId}/unavailable`, {
+    headers: _authHeaders(),
+  });
 }
 
 export async function createProfessionalBlock(professionalId, payload) {
   return _request(`/api/professionals/${professionalId}/unavailable`, {
     method: "POST",
     body: JSON.stringify(payload),
+    headers: _authHeaders(),
   });
 }
 
 export async function deleteProfessionalBlock(professionalId, blockId) {
   return _request(`/api/professionals/${professionalId}/unavailable/${blockId}`, {
     method: "DELETE",
+    headers: _authHeaders(),
   });
 }
 
@@ -80,27 +82,44 @@ export async function fetchAppointment(id) {
 }
 
 export async function fetchProfessionalAppointments(professionalId) {
-  return _request(`/api/appointments?professional_id=${professionalId}`);
+  return _request(`/api/appointments?professional_id=${professionalId}`, {
+    headers: _authHeaders(),
+  });
 }
 
 export async function confirmAppointment(id) {
-  return _request(`/api/appointments/${id}/confirm`, { method: "PATCH" });
+  return _request(`/api/appointments/${id}/confirm`, {
+    method: "PATCH",
+    headers: _authHeaders(),
+  });
 }
 
 export async function completeAppointment(id) {
-  return _request(`/api/appointments/${id}/complete`, { method: "PATCH" });
+  return _request(`/api/appointments/${id}/complete`, {
+    method: "PATCH",
+    headers: _authHeaders(),
+  });
 }
 
 export async function deleteAppointment(id) {
-  return _request(`/api/appointments/${id}`, { method: "DELETE" });
+  return _request(`/api/appointments/${id}`, {
+    method: "DELETE",
+    headers: _authHeaders(),
+  });
 }
 
 // ── Upload ────────────────────────────────────────────────────────────────────
 export async function uploadDesignImage(file) {
   const form = new FormData();
   form.append("file", file);
-  const res = await fetch(`${API_BASE}/api/upload`, { method: "POST", body: form });
+  const headers = _authHeaders();
+  delete headers["Content-Type"];
+  const res = await fetch(`${API_BASE}/api/upload`, {
+    method: "POST",
+    body: form,
+    headers,
+  });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `Upload failed (HTTP ${res.status})`);
-  return data; // { url: "/uploads/filename.jpg" }
+  return data;
 }

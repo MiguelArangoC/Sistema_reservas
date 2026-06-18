@@ -60,6 +60,7 @@ function formatLongDate(date) {
 
 document.getElementById("logout-btn")?.addEventListener("click", () => {
   sessionStorage.removeItem("professionalSession");
+  sessionStorage.removeItem("professionalToken");
   state.professional = null;
   setView();
 });
@@ -145,7 +146,6 @@ function openAppointment(id) {
     appt.service.image_url ||
     "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=720&q=85";
 
-  // Hide design image for specific categories
   const hideDesign = ["Masajes & Spa", "Tratamientos Faciales"].includes(
     appt.service.category,
   );
@@ -163,16 +163,16 @@ function openAppointment(id) {
         </ul>
         <div class="client-note">
           <strong>Notas del cliente</strong>
-          <p>“${appt.notes || "Sin notas adicionales."}”</p>
+          <p>"${appt.notes || "Sin notas adicionales."}"</p>
         </div>
       </section>
       <section>
         ${
           !hideDesign
             ? `
-          <strong class="design-label">Diseño a realizar</strong>
+          <strong class="design-label">Diseno a realizar</strong>
           <a href="${image}" target="_blank" class="design-large">
-            <img src="${image}" alt="Diseño propuesto por ${appt.client_name}">
+            <img src="${image}" alt="Diseno propuesto por ${appt.client_name}">
           </a>
         `
             : ""
@@ -186,7 +186,6 @@ function openAppointment(id) {
       </section>
     </div>`;
 
-  // Re-bind listeners for dynamic buttons
   document
     .getElementById("cancel-appointment-btn-modal")
     ?.addEventListener("click", () => cancelModal.classList.add("open"));
