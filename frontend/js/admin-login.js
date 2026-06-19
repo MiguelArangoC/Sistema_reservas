@@ -2,7 +2,9 @@
  * admin-login.js — Admin authentication for Lumina Studio
  */
 
-const API_BASE = localStorage.getItem("API_BASE") || "http://localhost:5000";
+import { getApiBase } from "./config.js";
+
+const API_BASE = getApiBase();
 
 const form       = document.getElementById("admin-login-form");
 const errorAlert = document.getElementById("login-error");

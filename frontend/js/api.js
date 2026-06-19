@@ -3,7 +3,9 @@
  * Base URL can be overridden via localStorage key 'API_BASE'
  */
 
-const API_BASE = localStorage.getItem("API_BASE") || "http://localhost:5000";
+import { getApiBase } from "./config.js";
+
+const API_BASE = getApiBase();
 
 async function _request(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, {

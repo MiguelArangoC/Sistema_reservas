@@ -142,7 +142,7 @@ async function initStep1() {
   } catch (err) {
     if (grid)
       grid.innerHTML = `<p style="color:var(--clr-text-muted);grid-column:1/-1;text-align:center">
-      Error cargando servicios. Asegúrate de que el backend está corriendo en <strong>localhost:5000</strong>.</p>`;
+      Error cargando servicios. No se pudo conectar con la API del servicio.</p>`;
     console.error(err);
   }
 }
