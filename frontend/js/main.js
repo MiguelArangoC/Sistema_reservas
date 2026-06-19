@@ -17,44 +17,61 @@ function initScrollAnimations() {
 }
 
 // ── Sticky nav ────────────────────────────────────────────────────────────────
+// ── Reemplazar la función initNav() completa en main.js ──────────────────────
+ 
 function initNav() {
-  const nav = document.querySelector(".nav");
-  const hamburger = document.querySelector(".nav__hamburger");
-  const links = document.querySelector(".nav__links");
-
-  window.addEventListener(
-    "scroll",
-    () => {
-      nav.classList.toggle("scrolled", window.scrollY > 20);
-    },
-    { passive: true },
-  );
-
+  const nav       = document.querySelector(".nav");
+  const hamburger = document.getElementById("hamburger");
+  const links     = document.getElementById("nav-links");
+ 
+  // Sticky nav
+  window.addEventListener("scroll", () => {
+    nav?.classList.toggle("scrolled", window.scrollY > 20);
+  }, { passive: true });
+ 
+  // Hamburger toggle
   hamburger?.addEventListener("click", () => {
-    links.classList.toggle("open");
+    const isOpen = links.classList.toggle("open");
+    hamburger.classList.toggle("is-open", isOpen);
+    hamburger.setAttribute("aria-expanded", isOpen);
   });
-
+ 
+  // Cerrar menú al hacer click en un link
+  links?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      links.classList.remove("open");
+      hamburger?.classList.remove("is-open");
+      hamburger?.setAttribute("aria-expanded", "false");
+    });
+  });
+ 
+  // Cerrar menú al hacer click fuera
+  document.addEventListener("click", (e) => {
+    if (!nav?.contains(e.target)) {
+      links?.classList.remove("open");
+      hamburger?.classList.remove("is-open");
+      hamburger?.setAttribute("aria-expanded", "false");
+    }
+  });
+ 
   // Active link highlighting
   const sections = document.querySelectorAll("section[id]");
-  const navLinks = document.querySelectorAll(".nav__links a");
-
-  const sectionObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          navLinks.forEach((l) => l.classList.remove("active"));
-          const link = document.querySelector(
-            `.nav__links a[href="#${e.target.id}"]`,
-          );
-          link?.classList.add("active");
-        }
-      });
-    },
-    { threshold: 0.4 },
-  );
+  const navLinks = document.querySelectorAll(".nav__links a:not(.btn)");
+ 
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        navLinks.forEach((l) => l.classList.remove("active"));
+        const link = document.querySelector(
+          `.nav__links a[href="#${e.target.id}"]`
+        );
+        link?.classList.add("active");
+      }
+    });
+  }, { threshold: 0.4 });
+ 
   sections.forEach((s) => sectionObserver.observe(s));
 }
-
 // ── Hero parallax ─────────────────────────────────────────────────────────────
 function initHeroParallax() {
   const heroBg = document.querySelector(".hero__bg");

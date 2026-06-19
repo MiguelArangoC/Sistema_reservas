@@ -8,6 +8,7 @@
   <meta property="og:title" content="Lumina Studio">
   <meta property="og:description" content="La excelencia del bienestar personalizada para ti.">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
 
@@ -15,21 +16,28 @@
 <nav class="nav" id="nav" role="navigation" aria-label="Navegación principal">
   <div class="nav__inner">
     <a href="index.html" class="nav__logo">Lumina Studio</a>
-
+ 
+    <!-- Links de navegación + botones CTA dentro del mismo menú -->
     <div class="nav__links" id="nav-links">
-      <a href="#inicio"         class="active">Inicio</a>
+      <a href="#inicio" class="active">Inicio</a>
       <a href="#servicios">Servicios</a>
       <a href="#profesionales">Profesionales</a>
       <a href="#contacto">Contacto</a>
+ 
+      <!-- Solo visible en el menú móvil desplegado -->
+      <div class="nav__mobile-actions">
+        <a href="booking.html" class="btn btn--primary">Reservar cita</a>
+        <a href="professional.html" class="btn btn--dark">Eres profesional</a>
+      </div>
     </div>
-
-    <a href="booking.html" class="btn btn--primary" id="nav-book-btn">
-      Reservar
-    </a>
-    <a href="professional.html" class="btn btn--dark" id="nav-professional-btn">Eres profesional</a>
-    <a href="admin.html" class="btn btn--admin" id="nav-admin-btn">Admin</a>
-
-    <button class="nav__hamburger" id="hamburger" aria-label="Abrir menú">
+ 
+    <!-- Solo visible en desktop -->
+    <div class="nav__actions">
+      <a href="booking.html" class="btn btn--primary">Reservar</a>
+      <a href="professional.html" class="btn btn--dark">Eres profesional</a>
+    </div>
+ 
+    <button class="nav__hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
   </div>

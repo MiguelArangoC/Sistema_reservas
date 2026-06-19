@@ -1,0 +1,563 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Lumina Studio — Responsive Fixes  v3
+   Importar ÚLTIMO en todos los HTML
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 0. GLOBAL ────────────────────────────────────────────────────────────── */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* ── 1. NAVBAR BASE ───────────────────────────────────────────────────────── */
+.nav {
+    overflow: visible; /* necesario para que el menú desplegado no se corte */
+}
+
+.nav__logo {
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-size: clamp(1.05rem, 4vw, 1.5rem);
+}
+
+/* Botones desktop (Reservar + Eres profesional) */
+.nav__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.nav__actions .btn {
+    white-space: nowrap;
+}
+
+/* Botones dentro del menú móvil — ocultos en desktop */
+.nav__mobile-actions {
+    display: none;
+}
+
+/* ── 2. NAVBAR TABLET (900px) ─────────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .nav__inner {
+        padding-inline: 1rem;
+        gap: 8px;
+    }
+
+    .nav__links {
+        gap: 1.25rem;
+    }
+
+    .nav__actions .btn {
+        padding: 0.45rem 0.8rem;
+        font-size: 0.76rem;
+    }
+}
+
+/* ── 3. NAVBAR MÓVIL (640px) ──────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    :root {
+        --nav-h: 60px;
+    }
+
+    .nav__inner {
+        padding-inline: 1rem;
+        justify-content: space-between;
+    }
+
+    /* Ocultar botones desktop */
+    .nav__actions {
+        display: none;
+    }
+
+    /* Mostrar hamburger */
+    .nav__hamburger {
+        display: flex !important;
+    }
+
+    /* Menú desplegable */
+    .nav__links {
+        display: flex !important;            /* override del display:none de style.css */
+        flex-direction: column;
+        gap: 0;
+        position: fixed;
+        top: 0;                              /* empieza desde arriba del todo */
+        left: 0;
+        right: 0;
+        background: rgba(253, 245, 243, 0.98);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding-top: calc(var(--nav-h) + 0.5rem); /* empuja contenido bajo el nav */
+        padding-bottom: 1.25rem;
+        padding-inline: 1rem;
+        border-bottom: 1px solid var(--clr-border-light);
+        box-shadow: 0 8px 24px rgba(61, 37, 53, 0.1);
+        transform: translateY(-100%);        /* se esconde completamente fuera */
+        transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 98;                         /* debajo del nav (z-index: 100) */
+    }
+
+    /* Links de navegación */
+    .nav__links a:not(.btn) {
+        display: block;
+        padding: 0.85rem 0.5rem;
+        border-bottom: 1px solid var(--clr-border-light);
+        font-size: 0.95rem;
+        color: var(--clr-text-mid);
+    }
+
+    .nav__links a:not(.btn):last-of-type {
+        border-bottom: none;
+    }
+
+    /* Botones CTA dentro del menú móvil */
+    .nav__mobile-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--clr-border-light);
+    }
+
+    .nav__mobile-actions .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Estado abierto */
+    .nav__links.open {
+        transform: translateY(0);
+    }
+
+    /* Transición en todas las spans siempre */
+    .nav__hamburger span {
+        transition: transform 240ms ease, opacity 200ms ease !important;
+    }
+
+    /* Animación hamburger → X (clase .is-open toggled por JS) */
+    .nav__hamburger.is-open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg) !important;
+    }
+
+    .nav__hamburger.is-open span:nth-child(2) {
+        opacity: 0 !important;
+        transform: scaleX(0) !important;
+    }
+
+    .nav__hamburger.is-open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg) !important;
+    }
+}
+
+/* ── 4. HERO ──────────────────────────────────────────────────────────────── */
+.hero {
+    padding-top: var(--nav-h);
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: 3rem;
+    min-height: 100svh;
+    min-height: 100vh;
+}
+
+.hero__title {
+    font-size: clamp(2rem, 8vw, 4.4rem);
+    word-break: break-word;
+}
+
+.hero__desc {
+    font-size: clamp(0.88rem, 2.5vw, 1rem);
+    max-width: 100%;
+}
+
+.hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.hero__cta .btn {
+    flex: 1 1 auto;
+    min-width: 140px;
+    justify-content: center;
+}
+
+@media (max-width: 400px) {
+    .hero__cta {
+        flex-direction: column;
+    }
+
+    .hero__cta .btn {
+        width: 100%;
+        flex: none;
+    }
+}
+
+/* ── 5. CONTAINER ─────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .container {
+        padding-inline: 1rem;
+    }
+}
+
+/* ── 6. TIPOGRAFÍA FLUIDA ─────────────────────────────────────────────────── */
+h1 { font-size: clamp(1.9rem, 6vw, 4rem); }
+h2 { font-size: clamp(1.5rem, 4vw, 2.8rem); }
+h3 { font-size: clamp(1.1rem, 2.5vw, 1.8rem); }
+
+/* ── 7. SERVICIOS CAROUSEL ────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .service-card {
+        flex: 0 0 min(260px, 78vw);
+    }
+
+    .service-card__img-wrap {
+        height: 180px;
+    }
+}
+
+/* ── 8. FEATURED GRID ─────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .services-featured {
+        grid-template-columns: 1fr;
+    }
+
+    .service-card--featured {
+        grid-row: auto;
+        min-height: 280px;
+    }
+
+    .service-card--sm {
+        height: 160px;
+    }
+}
+
+/* ── 9. SPOTLIGHT (grid inline en HTML) ───────────────────────────────────── */
+@media (max-width: 860px) {
+    #spotlight .container > div[style*="grid"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 2rem !important;
+    }
+
+    #spotlight img {
+        height: 320px !important;
+        width: 100% !important;
+    }
+}
+
+/* ── 10. PROFESSIONALS GRID ───────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .professionals-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── 11. CONTACT ──────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .map-placeholder {
+        height: 220px;
+    }
+}
+
+/* ── 12. FOOTER ───────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .footer__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── 13. BOOKING PAGE ─────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .step1-layout {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .categories-sidebar {
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        position: static !important;
+    }
+
+    .category-btn {
+        display: inline-flex !important;
+        width: auto !important;
+        padding: 0.4rem 0.85rem;
+        border: 1.5px solid var(--clr-border);
+        border-radius: var(--radius-full);
+        font-size: 0.78rem;
+    }
+
+    .category-btn.active {
+        border-color: var(--clr-primary);
+        background: var(--clr-primary);
+        color: #fff;
+    }
+
+    .services-booking-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .service-booking-card__img-wrap {
+        height: 150px;
+    }
+
+    .step2-layout,
+    .step3-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-card {
+        position: static !important;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .slots-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 400px) {
+    .slots-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .progress-step__label {
+        font-size: 0.6rem;
+        white-space: normal;
+        max-width: 52px;
+        text-align: center;
+    }
+}
+
+/* ── 14. ADMIN PANEL ──────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .admin-sidebar {
+        position: fixed !important;
+        top: 0; left: 0; right: 0;
+        bottom: auto !important;
+        width: 100% !important;
+        height: auto;
+        flex-direction: row !important;
+        align-items: center;
+        padding: 8px 12px !important;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        z-index: 100;
+    }
+
+    .admin-sidebar__brand {
+        flex-shrink: 0;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+        border-bottom: none !important;
+        border-right: 1px solid rgba(255,255,255,0.1);
+        padding-right: 10px;
+        margin-right: 4px;
+    }
+
+    .admin-sidebar__logo { font-size: 1rem !important; }
+    .admin-sidebar__role { display: none; }
+
+    .admin-nav {
+        flex-direction: row !important;
+        flex: 0 !important;
+        gap: 2px;
+    }
+
+    .admin-nav__item {
+        white-space: nowrap;
+        padding: 6px 10px !important;
+        font-size: 0.78rem !important;
+        flex-shrink: 0;
+    }
+
+    .admin-logout {
+        margin-top: 0 !important;
+        flex-shrink: 0;
+        font-size: 0.72rem;
+        padding: 6px 10px !important;
+        white-space: nowrap;
+    }
+
+    .admin-main {
+        margin-left: 0 !important;
+        margin-top: 52px;
+    }
+
+    .admin-topbar {
+        padding: 14px 16px !important;
+        top: 52px;
+    }
+
+    .admin-section {
+        padding: 20px 16px 48px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-kpi-row,
+    .admin-status-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px;
+    }
+
+    .admin-kpi__value { font-size: 1.7rem; }
+
+    .admin-revenue-hero {
+        flex-direction: column !important;
+        padding: 22px 18px !important;
+        gap: 10px;
+    }
+
+    .admin-revenue-hero__amount { font-size: 2.2rem !important; }
+    .admin-revenue-hero__icon  { display: none !important; }
+
+    .admin-topbar { flex-wrap: wrap; gap: 6px; }
+    .admin-topbar__title { font-size: 1rem !important; }
+
+    .admin-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .admin-table { min-width: 540px; }
+
+    .admin-professionals-grid { grid-template-columns: 1fr !important; }
+
+    .admin-category-bar {
+        grid-template-columns: 1fr auto !important;
+    }
+
+    .admin-category-bar__track { display: none !important; }
+
+    .admin-notif-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-date-input--lg,
+    .admin-btn--lg { width: 100%; }
+}
+
+/* ── 15. PROFESSIONAL PAGE ────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .pro-login__card {
+        grid-template-columns: 1fr !important;
+        min-height: auto !important;
+    }
+
+    .pro-login__image {
+        min-height: 200px;
+        padding: 24px 20px !important;
+    }
+
+    .pro-login__image h1 { font-size: 2rem !important; }
+
+    .pro-header {
+        padding: 20px 16px !important;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pro-header h1 { font-size: 2.2rem !important; }
+
+    .pro-dashboard__grid {
+        grid-template-columns: 1fr !important;
+        padding: 0 16px 48px !important;
+    }
+
+    .pro-appointment-card {
+        grid-template-columns: 70px 1fr !important;
+        gap: 12px !important;
+        padding: 14px !important;
+        min-height: auto !important;
+    }
+
+    .pro-appointment-card img {
+        width: 70px !important;
+        height: 70px !important;
+    }
+
+    .card-time, .card-arrow {
+        grid-column: 2;
+        text-align: left;
+    }
+
+    .quick-slots { grid-template-columns: 1fr 1fr !important; }
+
+    .appointment-modal {
+        padding: 40px 16px 28px !important;
+        width: calc(100vw - 24px) !important;
+    }
+
+    .detail-layout {
+        grid-template-columns: 1fr !important;
+        gap: 24px;
+    }
+
+    .detail-layout h2 { font-size: 2.2rem !important; }
+    .dialog-actions  { grid-template-columns: 1fr !important; }
+
+    .pro-footer {
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+        padding: 32px 16px 24px !important;
+    }
+}
+
+/* ── 16. MODALES ──────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .modal {
+        max-width: calc(100vw - 28px);
+        padding: 2rem 1.25rem;
+        border-radius: 16px;
+    }
+
+    .admin-dialog {
+        width: calc(100vw - 28px) !important;
+        padding: 26px 18px !important;
+        border-radius: 10px;
+    }
+}
+
+/* ── 17. TOUCH UX ─────────────────────────────────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+    .btn, .slot-btn, .category-btn,
+    .calendar__day, .admin-nav__item, .admin-filter-btn {
+        min-height: 44px;
+    }
+
+    .service-card:hover,
+    .professional-card:hover,
+    .service-booking-card:hover {
+        transform: none;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn--primary:hover,
+    .btn--dark:hover,
+    .admin-btn--primary:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+/* ── 18. REDUCED MOTION ───────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .hero__bg { transform: none !important; }
+}
