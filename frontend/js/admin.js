@@ -5,9 +5,11 @@
  *         HU-20 (Notificaciones WhatsApp)
  */
 
+import { getApiBase } from "./config.js";
+
 // ── Session & API config ──────────────────────────────────────────────────────
 const session  = JSON.parse(sessionStorage.getItem("adminSession") || "null");
-const API_BASE = localStorage.getItem("API_BASE") || "http://localhost:5000";
+const API_BASE = getApiBase();
 
 if (!session) {
   window.location.href = "admin-login.html";
