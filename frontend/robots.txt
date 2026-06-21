@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /professional.html
+Disallow: /login.html
+Disallow: /admin.html
+Disallow: /admin-login.html
+
+Sitemap: https://sistema-reservas-imjo.onrender.com/sitemap.xml

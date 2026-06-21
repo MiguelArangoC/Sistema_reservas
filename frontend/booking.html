@@ -3,14 +3,52 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Reservar Cita — Lumina Studio</title>
+        <title>Reservar Cita — Lumina Studio | Spa en Madrid</title>
         <meta
             name="description"
-            content="Reserva tu cita en Lumina Studio. Elige tu servicio, profesional y horario en minutos."
+            content="Reserva tu cita en Lumina Studio, spa en Madrid. Elige tratamiento facial, masaje o manicura, selecciona profesional y horario en minutos."
         />
+        <link rel="canonical" href="https://sistema-reservas-imjo.onrender.com/booking.html">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://sistema-reservas-imjo.onrender.com/booking.html">
+        <meta property="og:title" content="Reservar Cita — Lumina Studio Madrid">
+        <meta property="og:description" content="Reserva online tu tratamiento de bienestar en Lumina Studio. Elige servicio, profesional y horario en 3 pasos.">
+        <meta property="og:image" content="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1200&q=85">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Reservar Cita — Lumina Studio Madrid">
+        <meta name="twitter:description" content="Reserva online tu tratamiento de bienestar en Lumina Studio.">
+        <meta name="twitter:image" content="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1200&q=85">
         <link rel="stylesheet" href="css/style.css" />
         <link rel="stylesheet" href="css/booking.css" />
         <link rel="stylesheet" href="css/responsive.css">
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          "name": "Cómo reservar una cita en Lumina Studio",
+          "description": "Proceso de reserva online en 3 pasos para tratamientos de bienestar en Madrid.",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "position": 1,
+              "name": "Seleccionar servicio",
+              "text": "Elige el tratamiento que mejor se adapte a tus necesidades entre faciales, masajes, manicura, peluquería y maquillaje."
+            },
+            {
+              "@type": "HowToStep",
+              "position": 2,
+              "name": "Elegir profesional y horario",
+              "text": "Selecciona un profesional certificado y la fecha y hora disponible que prefieras."
+            },
+            {
+              "@type": "HowToStep",
+              "position": 3,
+              "name": "Confirmar datos",
+              "text": "Completa tu nombre y teléfono para finalizar la reserva. Recibirás confirmación inmediata."
+            }
+          ]
+        }
+        </script>
     </head>
     <body>
         <!-- ── Navigation ────────────────────────────────────────────────────────── -->
@@ -83,6 +121,7 @@
      STEP 1 — Service selection
 ═══════════════════════════════════════════════════════════════════════════ -->
         <main class="booking-main" id="booking-main">
+            <h1 class="visually-hidden">Reservar cita en Lumina Studio Madrid</h1>
             <section
                 class="booking-step active"
                 id="step-1"
@@ -90,7 +129,7 @@
             >
                 <div class="container">
                     <div class="step1-header">
-                        <h1 id="step1-title">Nuestros Servicios</h1>
+                        <h2 id="step1-title">Nuestros Servicios</h2>
                         <p>
                             Elija el tratamiento que mejor se adapte a sus
                             necesidades. Todos nuestros servicios son realizados
@@ -298,7 +337,7 @@
                         <!-- Form -->
                         <div>
                             <div class="step3-header">
-                                <h1 id="step3-title">Detalles de la Cita</h1>
+                                <h2 id="step3-title">Detalles de la Cita</h2>
                                 <p>
                                     Por favor, completa tus datos para finalizar
                                     la reserva.
